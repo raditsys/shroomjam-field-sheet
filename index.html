@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#e9e8df">
+<title>SHROOMJAM — The Live Field Sheet</title>
+<style>
+:root{--paper:#e9e8df;--sheet:#f9f8f3;--ink:#19231e;--line:#c8cac1;--muted:#767c74;--green:#d5ec76;--peach:#f3a38e;--white:#fff;--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;--sans:"Helvetica Neue",Helvetica,Arial,sans-serif;--serif:Georgia,"Times New Roman",serif}
+*{box-sizing:border-box}body{background:var(--paper);color:var(--ink);margin:0;font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased}button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid #879f36;outline-offset:3px}button:disabled{cursor:not-allowed;opacity:.3}::selection{background:var(--green);color:var(--ink)}
+.frame{max-width:1300px;margin:34px auto 60px;border:1px solid var(--ink);background:var(--sheet);box-shadow:9px 9px 0 rgba(30,40,30,.08)}
+.meta{background:var(--ink);color:var(--sheet);height:35px;display:flex;justify-content:space-between;align-items:center;padding:0 30px;font:10px var(--mono);letter-spacing:.055em}.meta span{white-space:nowrap}.marquee{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;padding:30px 40px 26px}.mark{display:flex;align-items:center;gap:20px}.glyph{width:61px;height:61px;border:2px solid var(--ink);display:grid;place-items:center;position:relative;flex-shrink:0}.glyph:before{content:"";position:absolute;width:45px;height:23px;top:12px;border-radius:28px 28px 5px 5px;background:var(--ink)}.glyph:after{content:"";position:absolute;width:14px;height:20px;top:30px;background:var(--ink)}.logo{text-transform:uppercase;font-size:clamp(42px,6vw,78px);font-weight:900;letter-spacing:-.09em;line-height:.79;margin:0}.logo small{font-size:.39em;letter-spacing:-.055em;vertical-align:top;margin-left:7px}.mast-right{display:flex;flex-direction:column;gap:10px;align-items:flex-end;padding-bottom:1px}.mast-right .micro{font:10px var(--mono);letter-spacing:.07em;color:var(--muted);text-align:right;line-height:1.5}.file-actions{display:flex;gap:7px;align-items:center}.file-btn{background:transparent;border:1px solid var(--ink);font:11px var(--mono);padding:9px 12px;white-space:nowrap;transition:background .15s}.file-btn:hover{background:var(--green)}.file-btn.dark{background:var(--ink);color:var(--sheet)}.file-btn.dark:hover{background:#314338}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}.step{min-width:0;display:flex;gap:14px;align-items:center;padding:17px 24px;border:0;border-right:1px solid var(--ink);background:transparent;text-align:left;position:relative}.step:last-child{border-right:0}.step:hover{background:#f0f1e7}.step[aria-selected="true"]{background:var(--green)}.step-num{font:12px var(--mono);opacity:.63}.step-text{font-weight:800;font-size:15px;letter-spacing:-.02em}.step-tick{margin-left:auto;font:13px var(--mono)}
+.panel{padding:31px 40px 36px;min-height:575px}.panel[hidden]{display:none!important}.sheet-top{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:22px}.title{font-family:var(--serif);font-size:clamp(30px,4.4vw,52px);line-height:1.1;letter-spacing:-.055em;margin:0;font-weight:normal}.title em{font-weight:normal}.side-note{font:10px var(--mono);letter-spacing:.04em;color:var(--muted);white-space:nowrap}.eyebrow{font:10px var(--mono);letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:var(--ink)}.serif{font-family:var(--serif)}
+.idea-grid{display:grid;grid-template-columns:minmax(250px,.76fr) minmax(0,1.6fr);column-gap:50px;border-top:1px solid var(--ink)}.brief,.shortlist{padding-top:21px;min-width:0}.shortlist{border-left:1px solid var(--line);padding-left:36px}.intro-small{font-size:12px;color:var(--muted);line-height:1.55;margin:8px 0 26px;max-width:275px}.line-field{border:0;border-bottom:1px solid var(--ink);background:transparent;outline:none;width:100%;padding:13px 1px 10px;font-size:23px;font-family:var(--serif);letter-spacing:-.04em;line-height:1.2;min-width:0;border-radius:0}.line-field:focus{border-bottom:2px solid #7d9e26;padding-bottom:9px}.line-field::placeholder,.name-field::placeholder,.note-field::placeholder,.type-area::placeholder,.loop-field::placeholder,.row-input::placeholder{color:#aeb2a7;opacity:1}.field-label{font:10px var(--mono);letter-spacing:.09em;font-weight:700;color:var(--muted);margin-top:18px;display:block}.aside-prompt{border-top:1px solid var(--line);padding-top:16px;margin-top:37px;color:var(--muted);font-size:12px;line-height:1.55;max-width:275px}.aside-prompt strong{color:var(--ink)}
+.short-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.short-head .small{font:10px var(--mono);color:var(--muted)}.score-head{display:grid;grid-template-columns:minmax(0,1fr) 37px 37px 37px 48px;gap:8px;align-items:end;padding:11px 0 9px;border-bottom:1px solid var(--ink);font:9px var(--mono);letter-spacing:.04em;text-align:center;color:var(--muted)}.score-head div:first-child{text-align:left}.idea-row{display:grid;grid-template-columns:minmax(0,1fr) 37px 37px 37px 48px;column-gap:8px;align-items:center;position:relative;padding:14px 0;border-bottom:1px solid var(--line);transition:background .12s}.idea-row.selected{background:var(--green);margin:0 -11px;padding:14px 11px;border-bottom-color:var(--ink)}.idea-info{min-width:0}.idea-identity{display:flex;gap:9px;align-items:center}.idx{font:10px var(--mono);color:var(--muted);flex-shrink:0}.name-field{font-size:18px;font-weight:750;letter-spacing:-.035em;min-width:0;width:100%;background:transparent;border:0;border-bottom:1px solid transparent;padding:0 0 3px;outline:0}.name-field:focus{border-bottom-color:var(--ink)}.note-field{font-size:11px;width:100%;border:0;border-bottom:1px solid transparent;background:transparent;padding:4px 0 0 22px;outline:0;color:#60695f;min-width:0}.note-field:focus{border-bottom-color:var(--ink)}.score-select{appearance:none;-webkit-appearance:none;border:1px solid var(--line);border-radius:0;text-align:center;text-align-last:center;width:33px;height:33px;background:transparent;font:13px var(--mono);font-weight:700;cursor:pointer}.score-select:hover{border-color:var(--ink)}.pick{background:transparent;border:1px solid var(--line);padding:8px 0;text-transform:uppercase;letter-spacing:.015em;font:10px var(--mono);height:33px;width:48px}.pick:hover{border-color:var(--ink)}.selected .pick{background:var(--ink);border-color:var(--ink);color:var(--sheet)}.idea-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:17px}.sum{font:10px var(--mono);color:var(--muted)}.sum strong{font-weight:700;color:var(--ink)}.next{background:var(--ink);color:var(--sheet);border:1px solid var(--ink);padding:12px 18px;font:12px var(--mono);letter-spacing:.01em;white-space:nowrap}.next:hover{background:#334b35}.next:disabled{opacity:.38}.next span{padding-left:16px}
+.plan-grid{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(260px,.78fr);column-gap:50px;border-top:1px solid var(--ink)}.plan-main{padding-top:22px}.plan-side{border-left:1px solid var(--line);padding-left:38px;padding-top:22px}.selected-name{font-size:11px;font-family:var(--mono);color:var(--muted);margin:8px 0 21px}.selected-name b{color:var(--ink)}.type-area{display:block;border:0;border-bottom:1px solid var(--ink);background:transparent;resize:vertical;width:100%;outline:0;font-family:var(--serif);font-size:27px;line-height:1.35;letter-spacing:-.04em;min-height:95px;padding:13px 0 9px;border-radius:0}.type-area:focus{border-bottom:2px solid #7d9e26}.subsection{font:10px var(--mono);letter-spacing:.1em;font-weight:700;margin-top:27px;margin-bottom:12px}.loop{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.loop-unit{position:relative}.loop-unit:not(:last-child):after{content:'→';position:absolute;right:-10px;top:28px;font:14px var(--mono);color:var(--muted);z-index:1}.loop-unit label{display:block;font:10px var(--mono);color:var(--muted);margin-bottom:6px}.loop-field{width:100%;min-width:0;background:#eff0e9;border:1px solid transparent;border-bottom:1px solid var(--ink);padding:11px 12px;font-size:13px;border-radius:0;outline:0}.loop-field:focus{border-color:var(--ink)}.aha-row{display:grid;grid-template-columns:25px minmax(0,1fr);align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:8px 0}.aha-row b{font:11px var(--mono);color:var(--muted)}.row-input{width:100%;min-width:0;outline:0;border:0;background:transparent;padding:7px 0;font-size:13px;letter-spacing:-.01em}.row-input:focus{box-shadow:inset 0 -1px var(--ink)}.scope-row{margin-top:20px}.scope-row label{font:10px var(--mono);letter-spacing:.08em;color:var(--muted);display:block}.scope-row input{width:100%;padding:12px 0 9px;border:0;border-bottom:1px solid var(--line);background:transparent;outline:0;font-size:13px}.scope-row input:focus{border-bottom-color:var(--ink)}.scope-row:nth-of-type(2){margin-top:24px}.scope-row p{font-size:11px;color:var(--muted);margin:5px 0 0}.aside-risk{margin-top:30px;padding:16px;background:var(--green);font-family:var(--serif);font-size:18px;line-height:1.25;letter-spacing:-.03em}.foot-row{border-top:1px solid var(--line);padding-top:18px;display:flex;justify-content:space-between;align-items:center;margin-top:29px;gap:16px}.foot-row p{font:10px var(--mono);color:var(--muted);margin:0}
+.week-table{border-top:1px solid var(--ink);margin-top:0}.week-row{display:grid;grid-template-columns:76px 145px minmax(0,1fr) 95px 45px;gap:16px;align-items:center;min-height:68px;border-bottom:1px solid var(--line)}.week-row.done .week-target{text-decoration:line-through;color:var(--muted)}.day-tag{font-family:var(--serif);font-size:26px;letter-spacing:-.06em}.date{font:10px var(--mono);color:var(--muted)}.phase{font-weight:700;letter-spacing:-.02em}.phase small{display:block;font:10px var(--mono);color:var(--muted);font-weight:400;margin-top:3px}.week-target{width:100%;font-size:13px;border:0;border-bottom:1px solid transparent;background:transparent;outline:none;padding:12px 0;min-width:0}.week-target:focus{border-bottom-color:var(--ink)}.owner{border:0;border-bottom:1px solid var(--line);width:100%;min-width:0;background:transparent;font:11px var(--mono);outline:0;padding:10px 0}.owner:focus{border-color:var(--ink)}.check{width:20px;height:20px;appearance:none;border:1px solid var(--ink);background:transparent;cursor:pointer;position:relative;margin:auto}.check:checked{background:var(--green)}.check:checked:after{content:'✓';position:absolute;left:3px;top:0px;font-size:15px}.week-heading{display:grid;grid-template-columns:76px 145px minmax(0,1fr) 95px 45px;gap:16px;font:10px var(--mono);color:var(--muted);padding:10px 0}.week-hint{font:11px var(--mono);color:var(--muted);margin-top:20px;line-height:1.6}.week-hint strong{color:var(--ink)}
+.bottom{border-top:1px solid var(--ink);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;font:10px var(--mono);color:var(--muted)}.bottom a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink)}.status:before{content:'';width:7px;height:7px;background:#8fa63c;display:inline-block;border-radius:50%;margin-right:8px}.mini-counter{color:var(--ink);font-weight:bold}
+.toast{position:fixed;bottom:20px;right:24px;background:var(--ink);color:var(--sheet);padding:12px 18px;font:11px var(--mono);pointer-events:none;opacity:0;transform:translateY(8px);transition:all .2s;z-index:5}.toast.show{opacity:1;transform:none}
+@media(max-width:950px){.frame{margin:16px}.marquee{padding:26px}.panel{padding:26px}.idea-grid,.plan-grid{gap:24px}.shortlist,.plan-side{padding-left:24px}.week-row,.week-heading{grid-template-columns:52px 120px minmax(0,1fr) 76px 30px;gap:10px}.bottom{padding:14px 26px}}
+@media(max-width:700px){.frame{margin:0;border-left:0;border-right:0;box-shadow:none}.meta{padding:0 17px}.marquee{padding:22px 19px;align-items:flex-start;gap:14px}.glyph{width:42px;height:42px}.glyph:before{width:31px;height:15px;top:8px}.glyph:after{width:10px;height:14px;top:21px}.logo{font-size:43px}.mark{gap:11px}.mast-right{gap:7px}.mast-right .micro{font-size:8px}.file-btn{padding:6px 7px;font-size:10px}.step{padding:15px 10px;gap:6px}.step-text{font-size:11px}.step-num{font-size:10px}.step-tick{font-size:10px}.panel{padding:23px 19px;min-height:0}.sheet-top{align-items:flex-start;padding-bottom:20px}.title{font-size:35px}.side-note{font-size:9px;text-align:right;white-space:normal;max-width:90px}.idea-grid,.plan-grid{display:block}.shortlist,.plan-side{border-left:0;padding-left:0;margin-top:27px;border-top:1px solid var(--ink)}.shortlist,.plan-side{padding-top:20px}.intro-small{margin:8px 0 10px}.aside-prompt{display:none}.line-field{font-size:22px}.brief .field-label{margin-top:15px}.selected-name{margin-bottom:8px}.type-area{font-size:23px;min-height:80px}.plan-side{margin-top:31px}.score-head,.idea-row{grid-template-columns:minmax(0,1fr) 34px 34px 34px 44px;gap:5px}.score-select{width:31px;height:31px}.pick{width:43px;height:31px;font-size:9px}.name-field{font-size:16px}.note-field{font-size:10px}.week-heading{display:none}.week-row{grid-template-columns:40px minmax(0,1fr) 32px;gap:12px;min-height:82px;position:relative;padding:12px 0}.date{display:none}.phase{grid-column:2;grid-row:1;font-size:13px}.day-tag{grid-row:1 / span 2;align-self:start;font-size:24px}.week-target{grid-column:2;grid-row:2;font-size:12px;padding:6px 0}.owner{grid-column:2;grid-row:3;font-size:10px;padding:4px 0;width:130px}.check{grid-column:3;grid-row:1 / span 3}.bottom{padding:12px 19px;font-size:9px}.bottom .tiny{display:none}.week-hint{margin-top:17px}}
+@media(max-width:700px){.marquee{display:flex;flex-direction:column;align-items:stretch;gap:18px}.mast-right{align-items:stretch}.mast-right .micro{display:none}.file-actions{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.file-btn{width:100%;padding:10px 5px;text-align:center}.meta{font-size:9px;gap:14px;white-space:nowrap}}
+@media(max-width:390px){.logo{font-size:36px}.glyph{width:34px;height:34px}.glyph:before{width:25px;height:13px;top:6px}.glyph:after{width:9px;height:12px;top:18px}.step{gap:4px}.step-text{font-size:10px}.mast-right .micro{display:none}.sheet-top .side-note{display:none}}
+@media print{body{background:white!important;font-size:11px}.frame{margin:0;max-width:none;border:0;box-shadow:none}.meta,.steps,.file-actions,.mast-right,.aside-prompt,.foot-row,.bottom,.toast{display:none!important}.marquee{padding:10px 0 25px}.logo{font-size:43px}.glyph{width:40px;height:40px}.panel{display:block!important;min-height:0;padding:14px 0 20px;break-inside:avoid}.sheet-top{padding:0 0 12px}.title{font-size:24px}.intro-small{display:none}.idea-grid{grid-template-columns:35% 1fr}.line-field{font-size:15px}.shortlist{padding-left:18px}.plan-grid{grid-template-columns:60% 1fr}.plan-side{padding-left:20px}.type-area{font-size:18px;min-height:65px}.week-row{min-height:44px}.step{display:none}.week-table{margin-top:0}.scope-row{margin-top:10px}input,textarea{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}.idea-row.selected{background:#e9f5b1!important}.panel[hidden]{display:block!important}.side-note{display:none}}
+
+/* One compact collaboration layer. Intentional: no extra dashboard panels. */
+.frame{position:relative}.collab-strip{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:2px;height:32px}.avatars{display:flex;align-items:center;padding-left:8px;min-width:0}.peer-avatar{display:grid;place-items:center;background:var(--peer-color);border:1px solid var(--ink);border-radius:50%;width:29px;height:29px;font-size:15px;margin-left:-8px;cursor:default}.me-button,.live-button{border:1px solid var(--ink);background:transparent;display:flex;align-items:center;height:32px;gap:7px;padding:3px 10px;font:10px var(--mono);white-space:nowrap;transition:background .15s}.me-button:hover,.live-button:hover{background:var(--green)}.me-icon{border:1px solid var(--ink);display:grid;place-items:center;background:var(--my-color);height:22px;width:22px;font-size:13px;margin-left:-5px}.live-button{background:var(--ink);color:var(--sheet)}.live-button:hover{background:#36493a;color:var(--sheet)}.led{height:7px;width:7px;border-radius:50%;background:#9ea49c}.live-button[data-kind=live] .led{background:var(--green);box-shadow:0 0 0 2px #d5ec7620}.live-button[data-kind=error] .led{background:#f39b8c}.live-button[data-kind=connecting] .led{background:#efd083;animation:livepulse 1.2s infinite}@keyframes livepulse{50%{opacity:.28}}.live-cursors{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:visible}.live-pointer{position:absolute;pointer-events:none;transition:left .13s linear,top .13s linear;z-index:10;will-change:left,top}.live-pointer[hidden]{display:none}.live-pointer-tip{display:block;width:21px;height:23px;background:var(--cursor-color);clip-path:polygon(0 0,0 100%,6px 15px,11px 24px,15px 22px,11px 14px,20px 10px);filter:drop-shadow(1px 1px 0 black)}.live-pointer-name{display:block;width:max-content;max-width:160px;overflow:hidden;text-overflow:ellipsis;background:var(--cursor-color);color:#17221b;padding:5px 7px;border:1px solid var(--ink);font:700 10px var(--mono);transform:translate(13px,-1px);box-shadow:2px 2px 0 #1c271d30}.bottom .status{white-space:nowrap}
+.live-dialog-backdrop[hidden],.dialog-view[hidden],[hidden].live-dialog-backdrop{display:none!important}.live-dialog-backdrop{position:fixed;inset:0;background:#17221bac;z-index:30;display:grid;place-items:center;padding:20px;overflow-y:auto}.live-dialog{width:min(100%,490px);background:var(--sheet);border:1px solid var(--ink);box-shadow:9px 9px 0 #18241c60;max-height:min(92vh,900px);overflow:auto}.dialog-top{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:var(--sheet);padding:12px 18px;font:11px var(--mono);letter-spacing:.09em}.dialog-x{border:1px solid #737c73;background:transparent;color:var(--sheet);font:17px var(--mono);height:29px;width:29px;line-height:1}.dialog-x:hover{background:#465347}.dialog-body{padding:30px}.dialog-h{font:normal 38px/1.05 var(--serif);letter-spacing:-.06em;margin:0 0 10px}.dialog-sub{font-size:13px;color:#677167;margin:0 0 25px;line-height:1.5}.dialog-label{display:block;font:700 10px var(--mono);letter-spacing:.1em;margin:22px 0 9px}.profile-name-input{width:100%;padding:12px 0;background:transparent;border:0;border-bottom:1px solid var(--ink);outline:none;font:25px var(--serif);letter-spacing:-.035em}.profile-name-input:focus{border-bottom:2px solid #86a52b}.icon-choices{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}.option-icon{border:1px solid var(--line);background:transparent;height:43px;font-size:22px}.option-icon:hover,.option-icon.active{border-color:var(--ink);background:var(--green)}.color-choices{display:flex;gap:8px;flex-wrap:wrap}.option-color{height:27px;width:27px;border:2px solid transparent;outline:1px solid var(--line)}.option-color.active{outline:2px solid var(--ink);outline-offset:2px}.dialog-actions{display:flex;gap:9px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);margin-top:28px;padding-top:22px}.dialog-action{background:var(--ink);border:1px solid var(--ink);color:var(--sheet);padding:12px 16px;font:11px var(--mono);letter-spacing:.02em}.dialog-action:hover{background:#344636}.dialog-action.secondary{background:transparent;color:var(--ink)}.dialog-action.secondary:hover{background:var(--green)}.dialog-action:disabled{opacity:.4}.connect-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--ink);border-bottom:1px solid var(--line);padding:13px 0;margin:20px 0}.connect-stats span{display:block;font:9px var(--mono);letter-spacing:.06em;color:var(--muted);margin-bottom:5px}.connect-stats b{font:700 11px var(--mono);overflow-wrap:anywhere}.firebase-input{width:100%;min-height:120px;resize:vertical;border:1px solid var(--ink);background:#f0f0e9;padding:12px;font:11px/1.5 var(--mono);outline:none}.firebase-input:focus{box-shadow:inset 0 0 0 1px #7e9d32}.connect-help{font:11px/1.6 var(--mono);color:var(--muted);margin:10px 0 0}.connect-help a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}.connect-detail{font-size:13px;line-height:1.6;color:#4f5c50}.connection-section{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:16px 0}.live-message{background:#f3e5be;padding:12px;border-left:3px solid #b79b49;font:11px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}.footnote{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);font:11px/1.55 var(--mono);color:#697168}.footnote b{color:var(--ink)}.quiet-link{background:none;border:0;border-bottom:1px solid #999;color:#60665c;padding:0 0 3px;font:10px var(--mono);letter-spacing:.03em}.quiet-link:hover{color:var(--ink)}.settings-inline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:15px;flex-wrap:wrap}
+@media(max-width:700px){.marquee{gap:14px}.collab-strip{justify-content:space-between;gap:5px}.me-button,.live-button{padding:3px 8px;font-size:9px}.me-icon{font-size:12px}.avatars{margin-right:auto}.dialog-body{padding:24px 20px}.live-dialog{box-shadow:5px 5px 0 #18241c60}.icon-choices{grid-template-columns:repeat(4,1fr)}.option-icon{height:46px}.dialog-h{font-size:34px}}
+@media print{.collab-strip,.live-dialog-backdrop,.live-cursors{display:none!important}}
+</style>
+</head>
+<body>
+<div class="frame">
+<header>
+  <div class="meta"><span>FIELD SHEET &nbsp; / &nbsp; 001</span><span>NOV 06—13 &nbsp; · &nbsp; 2026</span></div>
+  <div class="marquee">
+    <div class="mark"><span class="glyph" aria-hidden="true"></span><h1 class="logo">SHROOM<br>JAM<small>®</small></h1></div>
+    <div class="mast-right"><div class="collab-strip"><div class="avatars" id="peer-avatars" aria-label="Online collaborators"></div><button class="me-button" id="btn-me" title="Set your name, icon, and colour"><span class="me-icon" id="me-icon">🍄</span><span id="me-name">SET NAME</span></button><button class="live-button" id="btn-live" data-kind="local" title="Team connection settings"><span class="led"></span><span id="live-label">LOCAL · CONNECT</span></button></div><div class="file-actions"><button class="file-btn" id="btn-copy" title="Copy your one-page game design to clipboard">COPY GDD ↗</button><button class="file-btn dark" id="btn-export">SAVE FILE ↓</button><button class="file-btn" id="btn-import">OPEN ↑</button><input hidden type="file" id="upload" accept="application/json,.json"></div></div>
+  </div>
+</header>
+<nav class="steps" role="tablist" aria-label="Planning steps">
+  <button class="step" role="tab" id="step-0" aria-controls="panel-0" aria-selected="true" data-step="0"><span class="step-num">01</span><span class="step-text">PICK THE IDEA</span><span class="step-tick" id="done-0">↗</span></button>
+  <button class="step" role="tab" id="step-1" aria-controls="panel-1" aria-selected="false" data-step="1"><span class="step-num">02</span><span class="step-text">DESIGN THE GAME</span><span class="step-tick" id="done-1">↗</span></button>
+  <button class="step" role="tab" id="step-2" aria-controls="panel-2" aria-selected="false" data-step="2"><span class="step-num">03</span><span class="step-text">SHIP THE WEEK</span><span class="step-tick" id="done-2">↗</span></button>
+</nav>
+<main>
+<section class="panel" id="panel-0" role="tabpanel" aria-labelledby="step-0">
+  <div class="sheet-top"><h2 class="title">Find the <em>thing.</em></h2><div class="side-note">DAY 01 / CONCEPT SELECTION</div></div>
+  <div class="idea-grid">
+    <div class="brief"><div class="eyebrow">01A &nbsp; / &nbsp; THE BRIEF</div><p class="intro-small">Two constraints. One game. Start here when the theme drops.</p><label class="field-label" for="theme">THEME</label><input autocomplete="off" id="theme" class="line-field" data-bind="theme" placeholder="What's the theme?"><label class="field-label" for="curveball">CURVEBALL</label><input autocomplete="off" id="curveball" class="line-field" data-bind="curveball" placeholder="What's the object?"><p class="aside-prompt"><strong>The test:</strong> remove the theme or curveball. Does the mechanic change? If not, go back.</p></div>
+    <div class="shortlist"><div class="short-head"><div class="eyebrow">01B &nbsp; / &nbsp; THE SHORTLIST</div><div class="small">1–5 EACH. PICK ONE.</div></div>
+      <div class="score-head"><div>CONCEPT / HOOK</div><div>FUN</div><div>FIT</div><div>EASY</div><div>GO</div></div>
+      <div class="idea-row" data-concept-row="0"><div class="idea-info"><div class="idea-identity"><span class="idx">A.</span><input class="name-field" data-name="0" placeholder="Idea number one" aria-label="Concept A name"></div><input class="note-field" data-note="0" placeholder="What's the interesting interaction?" aria-label="Concept A hook"></div><select class="score-select" data-score="0-0" aria-label="Concept A fun score"></select><select class="score-select" data-score="0-1" aria-label="Concept A theme fit score"></select><select class="score-select" data-score="0-2" aria-label="Concept A feasibility score"></select><button class="pick" data-pick="0" title="Choose concept A">PICK</button></div>
+      <div class="idea-row" data-concept-row="1"><div class="idea-info"><div class="idea-identity"><span class="idx">B.</span><input class="name-field" data-name="1" placeholder="Idea number two" aria-label="Concept B name"></div><input class="note-field" data-note="1" placeholder="What's the interesting interaction?" aria-label="Concept B hook"></div><select class="score-select" data-score="1-0" aria-label="Concept B fun score"></select><select class="score-select" data-score="1-1" aria-label="Concept B theme fit score"></select><select class="score-select" data-score="1-2" aria-label="Concept B feasibility score"></select><button class="pick" data-pick="1" title="Choose concept B">PICK</button></div>
+      <div class="idea-row" data-concept-row="2"><div class="idea-info"><div class="idea-identity"><span class="idx">C.</span><input class="name-field" data-name="2" placeholder="Idea number three" aria-label="Concept C name"></div><input class="note-field" data-note="2" placeholder="What's the interesting interaction?" aria-label="Concept C hook"></div><select class="score-select" data-score="2-0" aria-label="Concept C fun score"></select><select class="score-select" data-score="2-1" aria-label="Concept C theme fit score"></select><select class="score-select" data-score="2-2" aria-label="Concept C feasibility score"></select><button class="pick" data-pick="2" title="Choose concept C">PICK</button></div>
+      <div class="idea-bottom"><span class="sum" id="ranking">FUN + FIT + EASY. <strong>MAX 15.</strong></span><button class="next" data-next="1" id="to-design">DESIGN IT <span>↗</span></button></div>
+    </div>
+  </div>
+</section>
+<section class="panel" id="panel-1" role="tabpanel" hidden>
+  <div class="sheet-top"><h2 class="title">Make it <em>matter.</em></h2><div class="side-note">DAY 01 / ONE-PAGE GDD</div></div>
+  <div class="plan-grid">
+    <div class="plan-main"><div class="eyebrow">02A &nbsp; / &nbsp; THE EXPERIENCE</div><div class="selected-name" id="chosen-label">SELECTED IDEA &nbsp; / &nbsp; <b>NOT YET PICKED</b></div><label class="eyebrow" for="pitch">THE ONE-SENTENCE PITCH</label><textarea id="pitch" data-bind="pitch" class="type-area" rows="2" placeholder="You are a ___ who ___, but ___ ."></textarea>
+      <div class="subsection">THE CORE LOOP &nbsp; / &nbsp; 3 PARTS</div><div class="loop"><div class="loop-unit"><label for="loop0">01 / DO</label><input id="loop0" class="loop-field" data-loop="0" placeholder="Player action"></div><div class="loop-unit"><label for="loop1">02 / REACT</label><input id="loop1" class="loop-field" data-loop="1" placeholder="Game response"></div><div class="loop-unit"><label for="loop2">03 / REWARD</label><input id="loop2" class="loop-field" data-loop="2" placeholder="Why repeat?"></div></div>
+      <div class="subsection">THREE AHA MOMENTS &nbsp; / &nbsp; NO NEW SYSTEMS</div><div class="aha-row"><b>01</b><input class="row-input" data-moment="0" aria-label="Discovery aha moment" placeholder="Discovery — 'Oh, I can do that.'"></div><div class="aha-row"><b>02</b><input class="row-input" data-moment="1" aria-label="Twist aha moment" placeholder="Twist — 'Wait, it also does this?' "></div><div class="aha-row"><b>03</b><input class="row-input" data-moment="2" aria-label="Payoff aha moment" placeholder="Payoff — 'That's ridiculous.'"></div>
+    </div>
+    <div class="plan-side"><div class="eyebrow">02B &nbsp; / &nbsp; THE HARD LIMITS</div><div class="scope-row"><label for="scope-ship">MUST SHIP</label><input id="scope-ship" data-scope="ship" placeholder="One mechanic, one ending…"></div><div class="scope-row"><label for="scope-cut">CUT FIRST</label><input id="scope-cut" data-scope="cut" placeholder="The nice-to-haves…"></div><div class="scope-row"><label for="scope-risk">BIGGEST RISK / FALLBACK</label><input id="scope-risk" data-scope="risk" placeholder="If ___ fails, we'll ___"></div><div class="aside-risk">If it isn't fun in greybox, the art won't save it.</div></div>
+  </div>
+  <div class="foot-row"><p>ONE MECHANIC &nbsp; / &nbsp; THREE BEATS &nbsp; / &nbsp; ONE FINISH LINE</p><button class="next" data-next="2">PLAN THE WEEK <span>↗</span></button></div>
+</section>
+<section class="panel" id="panel-2" role="tabpanel" hidden>
+  <div class="sheet-top"><h2 class="title">Then <em>ship it.</em></h2><div class="side-note">NOV 06—13 / 7 DAYS</div></div>
+  <div class="week-heading"><span>DAY</span><span>GATE</span><span>ONE DELIVERABLE</span><span>OWNER</span><span>DONE</span></div>
+  <div class="week-table" id="week-table"></div>
+  <p class="week-hint"><strong>THE RULE:</strong> Ship a playable beginning-to-end build by Day 4. Day 7 is for upload and contingency, not feature work.<br>Changes autosave locally. When connected, each field syncs live to your team.</p>
+</section>
+</main>
+<footer class="bottom"><span class="status" id="status">SAVED LOCALLY</span><span class="tiny">ONE IDEA. ONE SHARED SHEET.</span><span class="mini-counter" id="counter">01 / 03</span></footer>
+<div class="live-cursors" id="live-cursors" aria-hidden="true"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="live-dialog-backdrop" id="live-dialog-backdrop" hidden>
+  <div class="live-dialog" role="dialog" aria-modal="true" aria-label="Collaboration setup">
+    <div class="dialog-top"><span>SHROOMJAM / THE CREW</span><button class="dialog-x" id="close-live-dialog" aria-label="Close">×</button></div>
+    <div class="dialog-body">
+      <section class="dialog-view" id="profile-view" hidden>
+        <h2 class="dialog-h">Who are you,<br><em>strange creature?</em></h2>
+        <p class="dialog-sub">Your name, creature and colour appear next to your cursor. No login required.</p>
+        <label class="dialog-label" for="profile-name">YOUR NAME</label>
+        <input id="profile-name" class="profile-name-input" maxlength="20" autocomplete="off" placeholder="e.g. BIG NUT" />
+        <div class="dialog-label">YOUR CREATURE</div><div class="icon-choices" id="profile-icons"></div>
+        <div class="dialog-label">YOUR INK</div><div class="color-choices" id="profile-colors"></div>
+        <div class="dialog-actions"><button class="quiet-link" type="button" onclick="document.querySelector('#btn-live').click()">CONNECTION SETTINGS ↗</button><button class="dialog-action" id="btn-save-profile">THAT'S ME ↗</button></div>
+      </section>
+      <section class="dialog-view" id="connect-view" hidden>
+        <h2 class="dialog-h">One sheet.<br><em>Many gremlins.</em></h2>
+        <p class="dialog-sub">Live writing, funny cursors, and one shared plan. No emails, accounts or passwords to enter.</p>
+        <div class="connect-stats"><div><span>PROJECT</span><b id="connected-project">NOT CONFIGURED</b></div><div><span>ACCESS</span><b id="connected-user">GUEST MODE</b></div></div>
+        <p class="connect-detail" id="connect-detail"></p>
+        <div id="configuration-note"><label class="dialog-label" for="firebase-input">FIREBASE WEB CONFIG</label><p class="connect-help">Firebase Console → Project settings → Your apps → Web app. Paste the <b>firebaseConfig</b> object, including <b>databaseURL</b>.</p></div>
+        <textarea class="firebase-input" id="firebase-input" spellcheck="false" placeholder="const firebaseConfig = {
+  apiKey: '...',
+  authDomain: '...',
+  databaseURL: 'https://...',
+  projectId: '...',
+  appId: '...'
+};"></textarea>
+        <div class="connection-section"><button class="dialog-action" id="btn-config">USE THIS CONFIG ↗</button><span id="login-wait" class="connect-help" hidden>Joining automatically…</span><button class="dialog-action secondary" id="btn-retry" hidden>RETRY CONNECTION ↗</button></div>
+        <div class="live-message" id="live-message" role="status" hidden></div>
+        <div class="footnote"><b>OPEN JAM ROOM.</b> Anyone who has this site link can join and edit. Firebase signs each browser in as an anonymous guest behind the scenes. This is <b>not private access control</b>. Do not store secrets here; disable database writes after the jam. Firebase web config is public by design; never upload service-account keys.</div>
+        <div class="settings-inline"><button class="quiet-link" id="btn-invite">COPY SITE LINK ↗</button><button class="quiet-link" id="btn-copy-config">COPY CONFIG FILE ↗</button><button class="quiet-link" id="btn-clear-config" hidden>FORGET CONFIG</button></div>
+        <p class="connect-help">ROOM / <span id="room-label">shroomjam-2026</span> · If setup fails, check the README and rules file included with this site.</p>
+      </section>
+    </div>
+  </div>
+</div>
+<script>
+(()=>{'use strict';
+const KEY='shroomjam-field-sheet-v1';
+const seeds=[['PRE-PRODUCTION','Nov 06–07','Choose concept + finish the GDD'],['PROVE THE FUN','Nov 07–08','Playable core mechanic'],['VERTICAL SLICE','Nov 08–09','One finished minute'],['FULL GAME','Nov 09–10','Playable start to finish'],['CONTENT LOCK','Nov 10–11','All required content complete'],['TEST & PACKAGE','Nov 11–12','Outside playtest + Windows build'],['RELEASE','Nov 12–13','QA, itch page & submit']];
+const fresh=()=>({version:1,theme:'',curveball:'',ideas:Array.from({length:3},()=>({name:'',note:'',scores:[3,3,3]})),chosen:-1,pitch:'',loop:['','',''],moments:['','',''],scope:{ship:'',cut:'',risk:''},days:seeds.map(([phase,date,deliverable])=>({phase,date,deliverable,owner:'',done:false})),step:0});
+function normalize(raw){const o=fresh();if(!raw||typeof raw!=='object')return o;for(const k of ['theme','curveball','pitch'])if(typeof raw[k]==='string')o[k]=raw[k];if(Array.isArray(raw.ideas))raw.ideas.slice(0,3).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.ideas[i].name=String(x.name||'');o.ideas[i].note=String(x.note||'');if(Array.isArray(x.scores))x.scores.slice(0,3).forEach((n,j)=>o.ideas[i].scores[j]=Math.max(1,Math.min(5,Number(n)||3)));});if(Number.isInteger(raw.chosen)&&raw.chosen>=-1&&raw.chosen<3)o.chosen=raw.chosen;for(const k of ['loop','moments'])if(Array.isArray(raw[k]))raw[k].slice(0,3).forEach((x,i)=>o[k][i]=String(x||''));if(raw.scope&&typeof raw.scope==='object')for(const k of ['ship','cut','risk'])o.scope[k]=String(raw.scope[k]||'');if(Array.isArray(raw.days))raw.days.slice(0,7).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.days[i].deliverable=String(x.deliverable??o.days[i].deliverable);o.days[i].owner=String(x.owner||'');o.days[i].done=!!x.done});if(Number.isInteger(raw.step)&&raw.step>=0&&raw.step<=2)o.step=raw.step;return o;}
+let s=fresh();try{s=normalize(JSON.parse(localStorage.getItem(KEY)))}catch{};
+const q=(sel,base=document)=>base.querySelector(sel),qa=(sel,base=document)=>[...base.querySelectorAll(sel)];const el=(tag,cl,txt)=>{const d=document.createElement(tag);if(cl)d.className=cl;if(txt!==undefined)d.textContent=txt;return d};
+let toastTimeout;
+function toast(msg){const t=q('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove('show'),2200)}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(s));if(!document.body.dataset.connection || document.body.dataset.connection==='local')q('#status').textContent='SAVED LOCALLY'}catch{q('#status').textContent='STORAGE OFF — EXPORT A COPY'}drawProgress()}
+function fill(){q('[data-bind="theme"]').value=s.theme;q('[data-bind="curveball"]').value=s.curveball;q('[data-bind="pitch"]').value=s.pitch;qa('[data-concept-row]').forEach((row,i)=>{q('[data-name]',row).value=s.ideas[i].name;q('[data-note]',row).value=s.ideas[i].note;qa('[data-score]',row).forEach((sel,k)=>sel.value=s.ideas[i].scores[k])});qa('[data-loop]').forEach((x,i)=>x.value=s.loop[i]);qa('[data-moment]').forEach((x,i)=>x.value=s.moments[i]);qa('[data-scope]').forEach(x=>x.value=s.scope[x.dataset.scope]);qa('[data-day]').forEach((x,i)=>x.value=s.days[i].deliverable);qa('[data-owner]').forEach((x,i)=>x.value=s.days[i].owner);qa('[data-done]').forEach((x,i)=>x.checked=s.days[i].done);drawChosen();drawProgress();switchStep(s.step,false)}
+function drawChosen(){qa('[data-concept-row]').forEach((r,i)=>{const on=s.chosen===i;r.classList.toggle('selected',on);q('[data-pick]',r).textContent=on?'✓':'PICK';q('[data-pick]',r).setAttribute('aria-pressed',on?'true':'false')});const title=q('#chosen-label');q('b',title).textContent=s.chosen>=0?(s.ideas[s.chosen].name||'UNTITLED IDEA'):'NOT YET PICKED';const scores=s.ideas.map(x=>x.scores.reduce((a,b)=>a+b,0));const win=Math.max(...scores);const leaders=scores.map((n,i)=>n===win&&s.ideas[i].name?String.fromCharCode(65+i):'').filter(Boolean);q('#ranking').textContent=leaders.length===1?`TOP SCORE  /  ${leaders[0]} · ${win}/15`:`FUN + FIT + EASY. MAX 15.`}
+function drawProgress(){const filled=s.ideas.filter(x=>x.name.trim()).length;const game=[s.pitch,...s.loop,...s.moments,s.scope.ship,s.scope.cut,s.scope.risk].filter(x=>x.trim()).length;const week=s.days.filter(x=>x.done).length;q('#done-0').textContent=s.chosen>=0?'✓':'↗';q('#done-1').textContent=game>=7?'✓':'↗';q('#done-2').textContent=week===7?'✓':'↗';qa('.week-row').forEach((r,i)=>r.classList.toggle('done',s.days[i].done));q('#counter').textContent=`0${s.step+1} / 03`}
+function switchStep(n,scroll=true){s.step=n;qa('.step').forEach((x,i)=>{x.setAttribute('aria-selected',String(i===n));x.setAttribute('tabindex',i===n?'0':'-1')});qa('.panel').forEach((x,i)=>x.hidden=i!==n);drawProgress();persist();document.dispatchEvent(new CustomEvent('shroom:step'));if(scroll&&window.scrollY>110)window.scrollTo({top:0,behavior:'smooth'})}
+// Build the final seven rows only; there is intentionally no task system.
+const table=q('#week-table');s.days.forEach((d,i)=>{const row=el('div','week-row');row.dataset.index=i;const day=el('div','day-tag',String(i+1).padStart(2,'0'));const gate=el('div','phase',seeds[i][0]);const date=el('small','date',seeds[i][1]);gate.append(date);const target=el('input','week-target');target.dataset.day=i;target.setAttribute('aria-label',`Day ${i+1} deliverable`);target.placeholder='One thing to finish';const owner=el('input','owner');owner.dataset.owner=i;owner.setAttribute('aria-label',`Day ${i+1} owner`);owner.placeholder='NAME';const box=el('input','check');box.type='checkbox';box.dataset.done=i;box.setAttribute('aria-label',`Mark day ${i+1} complete`);row.append(day,gate,target,owner,box);table.append(row)});
+qa('[data-score]').forEach(sel=>{for(let n=1;n<=5;n++){const opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.append(opt)}});
+fill();
+document.addEventListener('input',e=>{const x=e.target;let key=null;if(x.hasAttribute('data-bind')){s[x.dataset.bind]=x.value;key=x.dataset.bind;}else if(x.hasAttribute('data-name')){s.ideas[+x.dataset.name].name=x.value;key='idea_'+x.dataset.name+'_name';}else if(x.hasAttribute('data-note')){s.ideas[+x.dataset.note].note=x.value;key='idea_'+x.dataset.note+'_note';}else if(x.hasAttribute('data-loop')){s.loop[+x.dataset.loop]=x.value;key='loop_'+x.dataset.loop;}else if(x.hasAttribute('data-moment')){s.moments[+x.dataset.moment]=x.value;key='moment_'+x.dataset.moment;}else if(x.hasAttribute('data-scope')){s.scope[x.dataset.scope]=x.value;key='scope_'+x.dataset.scope;}else if(x.hasAttribute('data-day')){s.days[+x.dataset.day].deliverable=x.value;key='day_'+x.dataset.day+'_deliverable';}else if(x.hasAttribute('data-owner')){s.days[+x.dataset.owner].owner=x.value;key='day_'+x.dataset.owner+'_owner';}else return;drawChosen();persist();document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key,value:x.value}}))});
+document.addEventListener('change',e=>{const x=e.target;if(x.hasAttribute('data-score')){const [i,j]=x.dataset.score.split('-').map(Number);s.ideas[i].scores[j]=Number(x.value);drawChosen();persist();document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key:'idea_'+i+'_score_'+j,value:Number(x.value)}}))}if(x.hasAttribute('data-done')){s.days[+x.dataset.done].done=x.checked;persist();document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key:'day_'+x.dataset.done+'_done',value:x.checked}}))}});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-pick')){s.chosen=+b.dataset.pick;drawChosen();persist();toast('IDEA SELECTED');document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key:'chosen',value:s.chosen}}))}if(b.hasAttribute('data-step'))switchStep(+b.dataset.step);if(b.hasAttribute('data-next')){if(b.dataset.next==='1'&&s.chosen<0){toast('PICK A CONCEPT FIRST');return}switchStep(+b.dataset.next)}});
+function gdText(){const v=x=>x&&String(x).trim()?String(x).trim():'—';const picked=s.chosen>=0?s.ideas[s.chosen].name:'Not chosen';return `# SHROOMJAM 2026 — FIELD SHEET\n\nTheme: ${v(s.theme)}\nCurveball: ${v(s.curveball)}\n\n## Chosen idea: ${v(picked)}\n${s.chosen>=0?v(s.ideas[s.chosen].note):''}\n\n## Pitch\n${v(s.pitch)}\n\n## Core loop\n${s.loop.map(v).join(' → ')}\n\n## Three aha moments\n1. ${v(s.moments[0])}\n2. ${v(s.moments[1])}\n3. ${v(s.moments[2])}\n\n## Scope\nMust ship: ${v(s.scope.ship)}\nCut first: ${v(s.scope.cut)}\nRisk / fallback: ${v(s.scope.risk)}\n\n## Seven-day plan\n${s.days.map((d,i)=>`- [${d.done?'x':' '}] Day ${i+1} · ${d.phase} · ${v(d.deliverable)} (${v(d.owner)})`).join('\n')}\n`}
+function download(data,name,type){const a=document.createElement('a');const url=URL.createObjectURL(new Blob([data],{type}));a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
+q('#btn-export').addEventListener('click',()=>{download(JSON.stringify(s,null,2),'shroomjam-plan.json','application/json');toast('SAVED PLAN TO FILE')});
+q('#btn-import').addEventListener('click',()=>q('#upload').click());q('#upload').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const json=JSON.parse(await f.text());if(!json||!Array.isArray(json.ideas)||!Array.isArray(json.days))throw Error('Not a Field Sheet JSON file');if(!confirm('Open this plan? It will replace the entries currently on screen.'))return;s=normalize(json);fill();persist();toast('PLAN OPENED');document.dispatchEvent(new CustomEvent('shroom:replace'))}catch(err){alert('Could not open plan: '+err.message)}finally{e.target.value=''}});
+q('#btn-copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(gdText());toast('GDD COPIED TO CLIPBOARD')}catch{download(gdText(),'shroomjam-gdd.md','text/markdown');toast('GDD DOWNLOADED AS MARKDOWN')}});
+// Firebase synchronization uses small individual fields (never a whole-document overwrite).
+function flatten(state=s){const data={theme:state.theme,curveball:state.curveball,pitch:state.pitch,chosen:state.chosen};
+state.ideas.forEach((v,i)=>{data['idea_'+i+'_name']=v.name;data['idea_'+i+'_note']=v.note;v.scores.forEach((score,j)=>data['idea_'+i+'_score_'+j]=score)});
+state.loop.forEach((v,i)=>data['loop_'+i]=v);state.moments.forEach((v,i)=>data['moment_'+i]=v);
+for(const k of ['ship','cut','risk'])data['scope_'+k]=state.scope[k];
+state.days.forEach((d,i)=>{data['day_'+i+'_deliverable']=d.deliverable;data['day_'+i+'_owner']=d.owner;data['day_'+i+'_done']=d.done});return data;}
+function nodeFor(k){if(['theme','curveball','pitch'].includes(k))return q('[data-bind="'+k+'"]');
+let m=k.match(/^idea_(\d+)_(name|note)$/);if(m)return q('[data-'+m[2]+'="'+m[1]+'"]');
+m=k.match(/^idea_(\d+)_score_(\d+)$/);if(m)return q('[data-score="'+m[1]+'-'+m[2]+'"]');
+m=k.match(/^(loop|moment)_(\d+)$/);if(m)return q('[data-'+m[1]+'="'+m[2]+'"]');
+m=k.match(/^scope_(ship|cut|risk)$/);if(m)return q('[data-scope="'+m[1]+'"]');
+m=k.match(/^day_(\d+)_(deliverable|owner|done)$/);if(m)return q('[data-'+({deliverable:'day',owner:'owner',done:'done'}[m[2]])+'="'+m[1]+'"]');return null;}
+const fieldDefaults=flatten(fresh());
+function applyFlat(data,dirty){let changed=false;for(const [key,val] of Object.entries({...fieldDefaults,...data})){
+if(!Object.hasOwn(fieldDefaults,key))continue;
+if(dirty.has(key))continue;const input=nodeFor(key);if(input && document.activeElement===input)continue;
+if(key==='chosen'){if(Number.isInteger(val)&&val>=-1&&val<=2&&s.chosen!==val){s.chosen=val;changed=true}continue;}
+let m=key.match(/^idea_(\d+)_(name|note)$/);if(m){s.ideas[+m[1]][m[2]]=String(val??'');}
+else if((m=key.match(/^idea_(\d+)_score_(\d+)$/))){s.ideas[+m[1]].scores[+m[2]]=Math.min(5,Math.max(1,Number(val)||3));}
+else if((m=key.match(/^(loop|moment)_(\d+)$/))){s[m[1]==='moment'?'moments':'loop'][+m[2]]=String(val??'');}
+else if((m=key.match(/^scope_(ship|cut|risk)$/))){s.scope[m[1]]=String(val??'');}
+else if((m=key.match(/^day_(\d+)_(deliverable|owner|done)$/))){s.days[+m[1]][m[2]]=m[2]==='done'?!!val:String(val??'');}
+else if(['theme','curveball','pitch'].includes(key)){s[key]=String(val??'');}
+else continue;
+if(input){if(input.type==='checkbox')input.checked=!!val;else input.value=String(val??'');}changed=true;}
+if(changed){drawChosen();drawProgress();persist();}}
+qa('.frame input:not([type]),.frame textarea').forEach(input=>input.maxLength=4000);
+window.FieldSheet={getFlat:()=>flatten(),applyFlat,getStep:()=>s.step};
+
+})();
+</script>
+<script src="./firebase-config.js"></script>
+<script type="module">
+// ShroomJam collaboration layer. Firebase is loaded only when configured.
+// Hosting: static GitHub Pages. Shared storage + cursors: Firebase Realtime Database.
+const $ = selector => document.querySelector(selector);
+const LS_CONFIG = 'shroomjam:firebase-config:v1';
+const LS_PROFILE = 'shroomjam:my-profile:v1';
+const ROOM = 'shroomjam-2026';
+const EMOJIS = ['🍄', '🐸', '🪿', '🐌', '🦝', '🦀', '🧀', '👁️'];
+const COLORS = ['#d5ec76', '#f3a38e', '#84c7de', '#ad9fee', '#f2c96b', '#a7dec2'];
+const defaults = { name: '', icon: '🍄', color: COLORS[0] };
+const readJSON = (k, fallback) => { try {return JSON.parse(localStorage.getItem(k)) ?? fallback;} catch {return fallback;} };
+let profile = {...defaults, ...readJSON(LS_PROFILE, {})};
+profile.name = typeof profile.name === 'string' ? profile.name.trim().slice(0,20) : '';
+if (!EMOJIS.includes(profile.icon)) profile.icon = EMOJIS[0];
+if (!COLORS.includes(profile.color)) profile.color = COLORS[0];
+let cfg = window.SHROOMJAM_FIREBASE_CONFIG || readJSON(LS_CONFIG, null);
+if (cfg && (!cfg.apiKey || !cfg.authDomain || !cfg.databaseURL || !cfg.projectId)) cfg = null;
+let sdk, app, auth, database, user = null, connected = false, joined = false;
+let fieldsRef, presenceRef, roomPresenceRef, connectionRef;
+let unsubFields = null, unsubPresence = null, unsubConnected = null, unsubAuth = null;
+const pending = new Map();
+const timers = new Map();
+const inflight = new Set();
+let lastRemote = {};
+let activeModal = null;
+let mouseTimer = 0;
+let mouseLast = 0;
+let pointer = {x: 0, y: 0, active: false};
+let onlineCount = 0;
+const failedFields = new Map();
+let readBlocked = false;
+let roomGeneration = 0;
+const session = (crypto?.randomUUID?.() || Math.random().toString(36).slice(2)).replaceAll('-', '').slice(0, 16);
+const frame = $('.frame');
+const overlay = $('#live-cursors');
+const liveLabel = $('#live-label');
+const liveButton = $('#btn-live');
+const meButton = $('#btn-me');
+
+function safeError(e) {
+  if (/permission.denied|PERMISSION_DENIED/i.test(String(e?.code || '') + ' ' + String(e?.message || ''))) return 'ACCESS DENIED — Publish the supplied anonymous guest Realtime Database Rules.';
+  if (/operation-not-allowed/.test(e?.code || '')) return 'ANONYMOUS SIGN-IN DISABLED — Enable Anonymous in Firebase Authentication → Sign-in method.';
+  if (/network-request-failed/.test(e?.code || '')) return 'NETWORK ERROR — Check your connection and retry.';
+  return String(e?.message || e || 'Unknown Firebase error').slice(0, 220);
+}
+function notice(msg) {
+  $('#live-message').textContent = msg;
+  $('#live-message').hidden = !msg;
+}
+function setStatus(label, kind='local') {
+  liveLabel.textContent = label;
+  liveButton.dataset.kind = kind;
+  $('#status').textContent = label;
+  document.body.dataset.connection = kind;
+}
+function refreshLiveStatus() {
+  if (!connected || readBlocked) return;
+  if (failedFields.size) {setStatus('SAVE ERROR','error');notice([...failedFields.values()].join('\n'));return;}
+  setStatus(pending.size ? 'SAVING…' : (onlineCount||1)+' ONLINE', pending.size ? 'connecting' : 'live');
+}
+function updateOwnChip() {
+  $('#me-icon').textContent = profile.icon;
+  $('#me-name').textContent = profile.name || 'SET NAME';
+  meButton.style.setProperty('--my-color', profile.color);
+}
+function drawProfilePicker() {
+  $('#profile-name').value = profile.name;
+  const iconWrap = $('#profile-icons');
+  const colorWrap = $('#profile-colors');
+  iconWrap.replaceChildren(); colorWrap.replaceChildren();
+  for (const emoji of EMOJIS) {
+    const button = document.createElement('button');
+    button.type='button'; button.className = 'option-icon' + (emoji === profile.icon ? ' active' : '');
+    button.textContent = emoji;
+    button.setAttribute('aria-label', 'Choose ' + emoji);
+    button.addEventListener('click', () => { profile.name=$('#profile-name').value; profile.icon = emoji; drawProfilePicker(); });
+    iconWrap.append(button);
+  }
+  for (const color of COLORS) {
+    const button = document.createElement('button');
+    button.type='button'; button.className = 'option-color' + (color === profile.color ? ' active' : '');
+    button.style.background = color; button.title = color;
+    button.setAttribute('aria-label', 'Select color ' + color);
+    button.addEventListener('click', () => { profile.name=$('#profile-name').value; profile.color = color; drawProfilePicker(); });
+    colorWrap.append(button);
+  }
+}
+function openModal(which) {
+  activeModal = which;
+  $('#live-dialog-backdrop').hidden = false;
+  $('#profile-view').hidden = which !== 'profile';
+  $('#connect-view').hidden = which !== 'connect';
+  if (which === 'profile') { drawProfilePicker(); setTimeout(() => $('#profile-name').focus(), 30); }
+  else { showConnectState(); setTimeout(() => { if (!cfg) $('#firebase-input').focus(); },30); }
+}
+function closeModal() {
+  $('#live-dialog-backdrop').hidden = true;
+  activeModal = null;
+}
+function showConnectState() {
+  $('#firebase-input').hidden = !!cfg;
+  $('#btn-config').hidden = !!cfg;
+  $('#configuration-note').hidden = !!cfg;
+  $('#btn-clear-config').hidden = !cfg;
+  $('#connected-project').textContent = cfg ? cfg.projectId : 'NOT CONFIGURED';
+  $('#connected-user').textContent = user ? 'GUEST · ' + user.uid.slice(0, 7) : (cfg ? 'JOINING AS GUEST' : 'NO LOGIN NEEDED');
+  $('#btn-retry').hidden = !cfg;
+  $('#login-wait').hidden = !cfg || !!user;
+  $('#room-label').textContent = ROOM;
+  $('#connect-detail').textContent = !cfg ? 'Paste your Firebase Web App config below. This identifies the project; it is not a password.' :
+      user ? (connected ? 'Live — everyone on this link can edit the same plan.' : 'Guest session active; checking Firebase connection…') : 'Firebase is configured. Joining anonymously — no email required.';
+}
+function configFromPaste(raw) {
+  const match = raw.trim().match(/\{[\s\S]*\}/);
+  if (!match) throw Error('Paste the firebaseConfig object from Project Settings.');
+  const asJSON = match[0]
+    .replace(/([,{]\s*)([a-zA-Z_$][\w$]*)(\s*:)/g, '$1"$2"$3')
+    .replace(/,\s*([}\]])/g, '$1');
+  const object = JSON.parse(asJSON);
+  if (!['apiKey', 'authDomain', 'databaseURL', 'projectId', 'appId'].every(k=>typeof object[k]==='string' && object[k].length))
+    throw Error('Missing required keys: apiKey, authDomain, databaseURL, projectId, or appId. Enable Realtime Database and copy the current Web App config.');
+  if (!/^https:\/\//.test(object.databaseURL)) throw Error('databaseURL must start with https://.');
+  return object;
+}
+function paintPeers(raw) {
+  const people = [];
+  for (const [uid, sessions] of Object.entries(raw || {})) {
+    for (const [sid, p] of Object.entries(sessions || {})) {
+      if (!p || uid === user?.uid && sid === session) continue;
+      const icon = EMOJIS.includes(p.icon) ? p.icon : '🍄';
+      const color = COLORS.includes(p.color) ? p.color : COLORS[0];
+      people.push({key: uid+'-'+sid, name: String(p.name || 'MYSTERY FUNGUS').slice(0,20),icon,color,
+        x: Math.max(0,Math.min(1,Number(p.x)||0)),y: Math.max(0,Math.min(1,Number(p.y)||0)),
+        step: Number(p.step)||0, active:p.active===true});
+    }
+  }
+  onlineCount = people.length + (connected ? 1 : 0);
+  const strip = $('#peer-avatars');
+  strip.replaceChildren();
+  people.slice(0,6).forEach(p => {
+    const avatar = document.createElement('span');
+    avatar.className = 'peer-avatar'; avatar.title=p.name;
+    avatar.style.setProperty('--peer-color',p.color);avatar.textContent=p.icon;
+    strip.append(avatar);
+  });
+  // Keep elements stable to make cursor movement smoothly interpolate.
+  const known = new Set();
+  people.forEach(p => {
+    known.add(p.key);
+    let marker = document.getElementById('cursor-' + p.key);
+    if (!marker) {
+      marker = document.createElement('div');
+      marker.className='live-pointer';marker.id='cursor-'+p.key;
+      const tip = document.createElement('span');tip.className='live-pointer-tip';
+      const tag=document.createElement('span');tag.className='live-pointer-name';
+      marker.append(tip,tag);overlay.append(marker);
+    }
+    marker.style.setProperty('--cursor-color', p.color);
+    marker.querySelector('.live-pointer-name').textContent=p.icon+' '+p.name;
+    marker.style.left=(p.x*100)+'%';marker.style.top=(p.y*100)+'%';
+    marker.hidden = !p.active || p.step !== window.FieldSheet.getStep();
+  });
+  [...overlay.children].forEach(child => {if (!known.has(child.id.replace('cursor-', ''))) child.remove();});
+  refreshLiveStatus();
+}
+async function ensureSDK() {
+  if (sdk) return;
+  setStatus('CONNECTING', 'connecting');
+  const root='https://www.gstatic.com/firebasejs/12.19.0/';
+  const [fb, fa, fd] = await Promise.all([
+    import(root+'firebase-app.js'),
+    import(root+'firebase-auth.js'),
+    import(root+'firebase-database.js')
+  ]);
+  sdk={...fb,...fa,...fd};
+}
+async function initFirebase() {
+  if (!cfg || app) return;
+  try {
+    await ensureSDK();
+    app = sdk.initializeApp(cfg);
+    auth = sdk.getAuth(app);
+    await sdk.setPersistence(auth, sdk.browserLocalPersistence);
+    database = sdk.getDatabase(app);
+    showConnectState();
+    unsubAuth = sdk.onAuthStateChanged(auth, async currentUser => {
+      if (!currentUser) {
+        user = null; connected = false; joined = false;
+        clearSubscriptions(); paintPeers({});
+        setStatus('JOINING AS GUEST', 'connecting');
+        showConnectState();
+        try { await sdk.signInAnonymously(auth); }
+        catch(e) { setStatus('AUTH ERROR', 'error'); notice(safeError(e)); showConnectState(); }
+        return;
+      }
+      // Automatically migrate users of the older Google sign-in version.
+      if (!currentUser.isAnonymous) {
+        try { await sdk.signOut(auth); }
+        catch(e) { setStatus('AUTH ERROR', 'error'); notice(safeError(e)); }
+        return;
+      }
+      user = currentUser;
+      showConnectState();
+      try { await joinRoom(); }
+      catch (e) { setStatus('ACCESS ERROR', 'error'); notice(safeError(e)); showConnectState(); }
+    }, error => {setStatus('SIGN-IN ERROR', 'error');notice(safeError(error));});
+  } catch (error) {
+    setStatus('SETUP ERROR', 'error'); notice(safeError(error)); showConnectState();
+  }
+}
+function clearSubscriptions(){
+  roomGeneration++;
+  unsubFields?.();unsubPresence?.();unsubConnected?.();
+  unsubFields=null;unsubPresence=null;unsubConnected=null;
+  fieldsRef=null;presenceRef=null;roomPresenceRef=null;
+}
+async function joinRoom() {
+  if (!user || !database) return;
+  clearSubscriptions();
+  const generation=roomGeneration;
+  connected=false;joined=false;readBlocked=false;setStatus('CONNECTING', 'connecting');notice('');
+  fieldsRef = sdk.ref(database, 'rooms/'+ROOM+'/fields');
+  roomPresenceRef=sdk.ref(database, 'rooms/'+ROOM+'/presence');
+  presenceRef=sdk.ref(database, 'rooms/'+ROOM+'/presence/'+user.uid+'/'+session);
+  // Atomic: only initialize an empty team sheet. A new teammate never overwrites it.
+  await sdk.runTransaction(fieldsRef, old => old===null ? window.FieldSheet.getFlat() : undefined, {applyLocally:false});
+  if(generation!==roomGeneration)return;
+  joined=true;
+  unsubFields=sdk.onValue(fieldsRef, snap => {
+    const incoming=snap.val()||{};
+    lastRemote=incoming;
+    readBlocked=false;
+    window.FieldSheet.applyFlat(incoming,pending);
+  },err=>{readBlocked=true;setStatus('READ BLOCKED','error');notice(safeError(err));});
+  unsubPresence=sdk.onValue(roomPresenceRef, snap => paintPeers(snap.val()),err=>{notice(safeError(err));});
+  connectionRef=sdk.ref(database,'.info/connected');
+  unsubConnected=sdk.onValue(connectionRef, async snap=>{
+    connected=snap.val()===true;
+    if (connected) {
+      try {
+        await sdk.onDisconnect(presenceRef).remove();
+        if(generation!==roomGeneration || !connected)return;
+        await sdk.set(presenceRef, {
+          name:profile.name||'MYSTERY FUNGUS',icon:profile.icon,color:profile.color,
+          x:pointer.x,y:pointer.y,active:false,step:window.FieldSheet.getStep(), at:sdk.serverTimestamp()
+        });
+        flushPending();
+        refreshLiveStatus();
+      } catch(e) {connected=false;setStatus('ACCESS ERROR','error');notice(safeError(e));}
+    } else {
+      setStatus('RECONNECTING','connecting');
+      overlay.replaceChildren();
+    }
+    showConnectState();
+  });
+}
+async function flushPending() {
+  if (!fieldsRef || !connected || !pending.size) return;
+  // Individual writes avoid replacing a teammate's concurrent edits.
+  for (const [key, val] of [...pending]) await writeField(key);
+}
+async function writeField(key) {
+  if (!joined || !fieldsRef || !connected || inflight.has(key)) return;
+  inflight.add(key);
+  try {
+    while (connected && pending.has(key)) {
+      const value = pending.get(key);
+      await sdk.set(sdk.child(fieldsRef,key),value);
+      if (pending.get(key) === value) pending.delete(key);
+    }
+    failedFields.delete(key);
+    if(!failedFields.size)notice('');
+  } catch(e) {failedFields.set(key,'Could not save '+key+': '+safeError(e));}
+  finally {
+    inflight.delete(key);
+    if (!failedFields.size) window.FieldSheet.applyFlat(lastRemote,pending);
+    refreshLiveStatus();
+  }
+}
+function queueEdit(key,val) {
+  if (!key) return;
+  pending.set(key,val);
+  failedFields.delete(key);
+  refreshLiveStatus();
+  clearTimeout(timers.get(key));
+  timers.set(key,setTimeout(()=>{timers.delete(key);writeField(key);}, key === 'chosen' || key.endsWith('_done') || key.includes('_score') ? 0:260));
+}
+async function updateOwnPresence(withPointer=false) {
+  if (!presenceRef || !connected) return;
+  try {
+    const patch={name: profile.name||'MYSTERY FUNGUS', icon:profile.icon,color:profile.color,step:window.FieldSheet.getStep()};
+    if(withPointer) Object.assign(patch,pointer,{at:sdk.serverTimestamp()});
+    await sdk.update(presenceRef,patch);
+  } catch(e) {notice('Presence: '+safeError(e));}
+}
+function publishCursor(e) {
+  if (!connected || !presenceRef || e.pointerType === 'touch') return;
+  const rect=frame.getBoundingClientRect();
+  if (rect.width<1 || rect.height<1) return;
+  pointer={x: Math.max(0, Math.min(1,(e.clientX-rect.left)/rect.width)),y:Math.max(0, Math.min(1,(e.clientY-rect.top)/rect.height)),active:true};
+  const now=performance.now();
+  if(now-mouseLast > 115) {clearTimeout(mouseTimer);mouseTimer=0;mouseLast=now;updateOwnPresence(true);}
+  else if(!mouseTimer) mouseTimer=setTimeout(()=>{mouseTimer=0;mouseLast=performance.now();updateOwnPresence(true);},115);
+}
+async function retryGuest() {
+  if (!app) {await initFirebase();return;}
+  if (!sdk || !auth) {notice('Firebase is still loading.'); return;}
+  try { notice(''); if(auth.currentUser?.isAnonymous){user=auth.currentUser;await joinRoom();}else await sdk.signInAnonymously(auth); }
+  catch(e) { setStatus('AUTH ERROR','error'); notice(safeError(e)); }
+}
+function applyConfig() {
+  try {
+    const input=$('#firebase-input').value;
+    const parsed=configFromPaste(input);
+    localStorage.setItem(LS_CONFIG,JSON.stringify(parsed));
+    cfg=parsed;
+    notice('Configuration saved in this browser. For your teammates, paste the same object into firebase-config.js in your GitHub repo.');
+    showConnectState();
+    initFirebase();
+  } catch(e) {notice(safeError(e));}
+}
+function saveProfile() {
+  profile.name=$('#profile-name').value.trim().replace(/\s+/g,' ').slice(0,20) || 'MYSTERY FUNGUS';
+  localStorage.setItem(LS_PROFILE,JSON.stringify(profile));
+  updateOwnChip();
+  updateOwnPresence();
+  closeModal();
+}
+function copyInviteLink() {
+  const url=location.href.split('#')[0];
+  navigator.clipboard.writeText(url).then(()=>notice('Link copied. Anyone opening it can edit the shared sheet.')).catch(()=>notice('Copy the URL from your browser address bar.'));
+}
+function copyConfigSnippet() {
+  if(!cfg) {notice('Connect Firebase first.');return;}
+  const snippet='window.SHROOMJAM_FIREBASE_CONFIG = '+JSON.stringify(cfg,null,2)+';\n';
+  navigator.clipboard.writeText(snippet).then(()=>notice('Copied. Replace firebase-config.js in the GitHub repository with this code.')).catch(()=>notice('Clipboard unavailable. Copy the config from Firebase Console instead.'));
+}
+$('#btn-me').addEventListener('click',()=>openModal('profile'));
+$('#btn-live').addEventListener('click',()=>openModal('connect'));
+$('#close-live-dialog').addEventListener('click',closeModal);
+$('#live-dialog-backdrop').addEventListener('click',e=>{if(e.target.id==='live-dialog-backdrop')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeModal)closeModal();});
+$('#btn-save-profile').addEventListener('click',saveProfile);
+$('#profile-name').addEventListener('keydown',e=>{if(e.key==='Enter')saveProfile();});
+$('#btn-config').addEventListener('click',applyConfig);
+$('#btn-retry').addEventListener('click',retryGuest);
+$('#btn-clear-config').addEventListener('click',()=>{ if (!confirm('Forget the Firebase connection on this device?'))return;localStorage.removeItem(LS_CONFIG);location.reload(); });
+$('#btn-invite').addEventListener('click',copyInviteLink);
+$('#btn-copy-config').addEventListener('click',copyConfigSnippet);
+frame.addEventListener('pointermove',publishCursor,{passive:true});
+frame.addEventListener('pointerleave',()=>{pointer.active=false;updateOwnPresence(true);});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){pointer.active=false;updateOwnPresence(true);}});
+document.addEventListener('shroom:edit',e=>queueEdit(e.detail.key,e.detail.value));
+document.addEventListener('focusout',()=>{if(joined && Object.keys(lastRemote).length) setTimeout(()=>window.FieldSheet.applyFlat(lastRemote,pending),0);});
+document.addEventListener('shroom:replace',()=>{
+  for(const [key,value] of Object.entries(window.FieldSheet.getFlat()))queueEdit(key,value);
+});
+// onDisconnect is registered again on every connection, including restored pages.
+window.addEventListener('pagehide',()=>{if(database)sdk.goOffline(database);});
+window.addEventListener('pageshow',e=>{if(e.persisted && database)sdk.goOnline(database);});
+document.addEventListener('shroom:step',()=>{
+  updateOwnPresence();
+  // Hide pointers on other tabs; the next presence update brings back matching pointers.
+  [...overlay.children].forEach(node=>node.hidden=true);
+  if (roomPresenceRef && joined) sdk.get(roomPresenceRef).then(snap=>paintPeers(snap.val())).catch(()=>{});
+});
+updateOwnChip();
+if(!profile.name && !sessionStorage.getItem('shroom:profile-prompt')) {
+  sessionStorage.setItem('shroom:profile-prompt','1');
+  openModal('profile');
+}
+if(cfg) initFirebase(); else setStatus('LOCAL · CONNECT','local');
+showConnectState();
+
+</script>
+</body>
+</html>

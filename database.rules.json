@@ -1,0 +1,53 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "shroomjam-2026": {
+        ".read": "auth != null && auth.token.firebase.sign_in_provider === 'anonymous'",
+        "fields": {
+          ".write": "auth != null && auth.token.firebase.sign_in_provider === 'anonymous' && newData.exists()",
+          ".validate": "newData.hasChildren([\"theme\", \"curveball\", \"pitch\", \"idea_0_name\", \"idea_0_note\", \"idea_1_name\", \"idea_1_note\", \"idea_2_name\", \"idea_2_note\", \"loop_0\", \"loop_1\", \"loop_2\", \"moment_0\", \"moment_1\", \"moment_2\", \"scope_ship\", \"scope_cut\", \"scope_risk\", \"day_0_deliverable\", \"day_0_owner\", \"day_1_deliverable\", \"day_1_owner\", \"day_2_deliverable\", \"day_2_owner\", \"day_3_deliverable\", \"day_3_owner\", \"day_4_deliverable\", \"day_4_owner\", \"day_5_deliverable\", \"day_5_owner\", \"day_6_deliverable\", \"day_6_owner\", \"chosen\", \"idea_0_score_0\", \"idea_0_score_1\", \"idea_0_score_2\", \"idea_1_score_0\", \"idea_1_score_1\", \"idea_1_score_2\", \"idea_2_score_0\", \"idea_2_score_1\", \"idea_2_score_2\", \"day_0_done\", \"day_1_done\", \"day_2_done\", \"day_3_done\", \"day_4_done\", \"day_5_done\", \"day_6_done\"])",
+          "$field": {
+            ".validate": "($field.matches(/^(theme|curveball|pitch|idea_[0-2]_(name|note)|loop_[0-2]|moment_[0-2]|scope_(ship|cut|risk)|day_[0-6]_(deliverable|owner))$/) && newData.isString() && newData.val().length <= 4000) || ($field === 'chosen' && newData.isNumber() && newData.val() >= -1 && newData.val() <= 2 && newData.val() % 1 === 0) || ($field.matches(/^idea_[0-2]_score_[0-2]$/) && newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 === 0) || ($field.matches(/^day_[0-6]_done$/) && newData.isBoolean())"
+          }
+        },
+        "presence": {
+          "$uid": {
+            ".write": "auth != null && auth.token.firebase.sign_in_provider === 'anonymous' && auth.uid === $uid",
+            "$session": {
+              ".validate": "$session.matches(/^[a-zA-Z0-9_-]{1,64}$/) && newData.hasChildren(['name','icon','color','x','y','active','step','at'])",
+              "name": {
+                ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 20"
+              },
+              "icon": {
+                ".validate": "newData.isString() && (newData.val() === \"🍄\" || newData.val() === \"🐸\" || newData.val() === \"🪿\" || newData.val() === \"🐌\" || newData.val() === \"🦝\" || newData.val() === \"🦀\" || newData.val() === \"🧀\" || newData.val() === \"👁️\")"
+              },
+              "color": {
+                ".validate": "newData.isString() && (newData.val() === \"#d5ec76\" || newData.val() === \"#f3a38e\" || newData.val() === \"#84c7de\" || newData.val() === \"#ad9fee\" || newData.val() === \"#f2c96b\" || newData.val() === \"#a7dec2\")"
+              },
+              "active": {
+                ".validate": "newData.isBoolean()"
+              },
+              "step": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 2 && newData.val() % 1 === 0"
+              },
+              "at": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= now + 10000"
+              },
+              "$other": {
+                ".validate": false
+              },
+              "x": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1"
+              },
+              "y": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
