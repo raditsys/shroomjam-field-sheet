@@ -40,3 +40,10 @@ Any anonymous visitor may edit this intentionally open worksheet. Rules deny una
 - To reveal the owner button, click the large SHROOM JAM logo five times within three seconds, then enter `bignut`. `RESET DOCUMENT` stays hidden on each fresh page load until unlocked. Reset asks for confirmation and downloads a JSON backup before replacing the shared fields with defaults and clearing all drawings.
 - The password is a casual UI lock, as requested. It is visible in public client code and is not server-side owner authorization. The room remains intentionally editable by anonymous visitors.
 - JSON exports include drawings. Importing an older backup without drawings clears existing shared drawings after the usual import confirmation.
+
+
+## Build the details
+
+The fourth tab records the playable contract, three testable mechanics, feel and three references, plus eight asset rows. Every input saves as an individual `build_*` field under the existing room. New fields are optional in older remote documents; the original required keys remain unchanged. Presence and drawings support all four pages.
+
+JSON exports use version 2 and include the build details. Version-1 backups import with empty build fields. `COPY GDD` includes filled build sections and omits empty rows. Owner reset clears build details too. Tab navigation supports arrow keys, Home, and End. Reference links open only HTTP/HTTPS addresses.
