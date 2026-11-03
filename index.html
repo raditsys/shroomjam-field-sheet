@@ -212,7 +212,7 @@ window.FieldSheet={getFlat:()=>flatten(),getDefaults:()=>({...fieldDefaults}),ap
 </script>
 <script src="./firebase-config.js"></script>
 <script type="module">
-import {setupSheetTools} from './sheet-tools.js';
+import {setupSheetTools} from './sheet-tools.js?v=2';
 // ShroomJam collaboration layer. Firebase is loaded only when configured.
 // Hosting: static GitHub Pages. Shared storage + cursors: Firebase Realtime Database.
 const $ = selector => document.querySelector(selector);
