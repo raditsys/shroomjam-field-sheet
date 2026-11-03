@@ -22,10 +22,21 @@ Presence uses `onDisconnect()` and re-registers after reconnection. Cursor movem
 ## Disable edits after November 13, 2026
 
 1. Open Firebase Console, project `shroomjam-live`, Realtime Database, Rules.
-2. Under `rooms/shroomjam-2026/fields`, change its `.write` expression to `false`.
+2. Under both `rooms/shroomjam-2026/fields` and `rooms/shroomjam-2026/drawings`, change each `.write` expression to `false`.
 3. Publish. Keep the room `.read` rule and presence rules unchanged to retain guest reading and online indicators.
 4. Export a final JSON backup with `SAVE FILE` before archiving the jam.
 
 There is no scheduled shutdown. Changing repository files alone does not publish Firebase rules. To reopen edits, restore the `.write` expression from `database.rules.json` and publish. To block all database access, publish `{"rules":{".read":false,".write":false}}` in this dedicated project.
 
 Any anonymous visitor may edit this intentionally open worksheet. Rules deny unauthenticated access, other rooms, unknown fields, invalid types, oversized strings, and writes to another UID's presence. Do not store private information here.
+
+
+## Dark mode, drawings, and owner reset
+
+- `DARK MODE` changes only your browser and remembers your choice. Printouts keep the original light palette.
+- `DRAW: ON` lets you sketch over the current worksheet page with a mouse, pen, or touch. Turn drawing off to edit text. The pen uses your profile colour, with darker ink on light paper for contrast.
+- `HIDE DRAWINGS` hides ink only in your browser; `SHOW DRAWINGS` reveals it again. Drawings remain shared and persist after refresh. Each of the three pages has its own drawing layer.
+- `UNDO STROKE` removes your latest stroke from the current browser session. Long strokes are split into bounded segments. Shared ink writes are throttled and save separately from planning fields.
+- To reveal the owner button, click the large SHROOM JAM logo five times within three seconds, then enter `bignut`. `RESET DOCUMENT` stays hidden on each fresh page load until unlocked. Reset asks for confirmation and downloads a JSON backup before replacing the shared fields with defaults and clearing all drawings.
+- The password is a casual UI lock, as requested. It is visible in public client code and is not server-side owner authorization. The room remains intentionally editable by anonymous visitors.
+- JSON exports include drawings. Importing an older backup without drawings clears existing shared drawings after the usual import confirmation.

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#e9e8df">
 <title>SHROOMJAM — The Live Field Sheet</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('shroomjam:theme')==='dark'?'dark':'light'}catch{}</script>
 <style>
 :root{--paper:#e9e8df;--sheet:#f9f8f3;--ink:#19231e;--line:#c8cac1;--muted:#767c74;--green:#d5ec76;--peach:#f3a38e;--white:#fff;--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;--sans:"Helvetica Neue",Helvetica,Arial,sans-serif;--serif:Georgia,"Times New Roman",serif}
 *{box-sizing:border-box}body{background:var(--paper);color:var(--ink);margin:0;font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased}button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid #879f36;outline-offset:3px}button:disabled{cursor:not-allowed;opacity:.3}::selection{background:var(--green);color:var(--ink)}
@@ -29,6 +30,32 @@
 .live-dialog-backdrop[hidden],.dialog-view[hidden],[hidden].live-dialog-backdrop{display:none!important}.live-dialog-backdrop{position:fixed;inset:0;background:#17221bac;z-index:30;display:grid;place-items:center;padding:20px;overflow-y:auto}.live-dialog{width:min(100%,490px);background:var(--sheet);border:1px solid var(--ink);box-shadow:9px 9px 0 #18241c60;max-height:min(92vh,900px);overflow:auto}.dialog-top{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:var(--sheet);padding:12px 18px;font:11px var(--mono);letter-spacing:.09em}.dialog-x{border:1px solid #737c73;background:transparent;color:var(--sheet);font:17px var(--mono);height:29px;width:29px;line-height:1}.dialog-x:hover{background:#465347}.dialog-body{padding:30px}.dialog-h{font:normal 38px/1.05 var(--serif);letter-spacing:-.06em;margin:0 0 10px}.dialog-sub{font-size:13px;color:#677167;margin:0 0 25px;line-height:1.5}.dialog-label{display:block;font:700 10px var(--mono);letter-spacing:.1em;margin:22px 0 9px}.profile-name-input{width:100%;padding:12px 0;background:transparent;border:0;border-bottom:1px solid var(--ink);outline:none;font:25px var(--serif);letter-spacing:-.035em}.profile-name-input:focus{border-bottom:2px solid #86a52b}.icon-choices{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}.option-icon{border:1px solid var(--line);background:transparent;height:43px;font-size:22px}.option-icon:hover,.option-icon.active{border-color:var(--ink);background:var(--green)}.color-choices{display:flex;gap:8px;flex-wrap:wrap}.option-color{height:27px;width:27px;border:2px solid transparent;outline:1px solid var(--line)}.option-color.active{outline:2px solid var(--ink);outline-offset:2px}.dialog-actions{display:flex;gap:9px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);margin-top:28px;padding-top:22px}.dialog-action{background:var(--ink);border:1px solid var(--ink);color:var(--sheet);padding:12px 16px;font:11px var(--mono);letter-spacing:.02em}.dialog-action:hover{background:#344636}.dialog-action.secondary{background:transparent;color:var(--ink)}.dialog-action.secondary:hover{background:var(--green)}.dialog-action:disabled{opacity:.4}.connect-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--ink);border-bottom:1px solid var(--line);padding:13px 0;margin:20px 0}.connect-stats span{display:block;font:9px var(--mono);letter-spacing:.06em;color:var(--muted);margin-bottom:5px}.connect-stats b{font:700 11px var(--mono);overflow-wrap:anywhere}.firebase-input{width:100%;min-height:120px;resize:vertical;border:1px solid var(--ink);background:#f0f0e9;padding:12px;font:11px/1.5 var(--mono);outline:none}.firebase-input:focus{box-shadow:inset 0 0 0 1px #7e9d32}.connect-help{font:11px/1.6 var(--mono);color:var(--muted);margin:10px 0 0}.connect-help a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}.connect-detail{font-size:13px;line-height:1.6;color:#4f5c50}.connection-section{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:16px 0}.live-message{background:#f3e5be;padding:12px;border-left:3px solid #b79b49;font:11px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}.footnote{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);font:11px/1.55 var(--mono);color:#697168}.footnote b{color:var(--ink)}.quiet-link{background:none;border:0;border-bottom:1px solid #999;color:#60665c;padding:0 0 3px;font:10px var(--mono);letter-spacing:.03em}.quiet-link:hover{color:var(--ink)}.settings-inline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:15px;flex-wrap:wrap}
 @media(max-width:700px){.marquee{gap:14px}.collab-strip{justify-content:space-between;gap:5px}.me-button,.live-button{padding:3px 8px;font-size:9px}.me-icon{font-size:12px}.avatars{margin-right:auto}.dialog-body{padding:24px 20px}.live-dialog{box-shadow:5px 5px 0 #18241c60}.icon-choices{grid-template-columns:repeat(4,1fr)}.option-icon{height:46px}.dialog-h{font-size:34px}}
 @media print{.collab-strip,.live-dialog-backdrop,.live-cursors{display:none!important}}
+.sheet-tools{display:flex;flex-wrap:wrap;gap:7px;padding:10px 40px;border-top:1px solid var(--line)}
+.tool-btn{border:1px solid var(--line);background:transparent;padding:7px 10px;font:10px var(--mono);letter-spacing:.02em}
+.tool-btn:hover,.tool-btn[aria-pressed=true]{background:var(--green);color:#19231e;border-color:var(--ink)}
+.tool-btn[hidden]{display:none!important}.tool-btn.danger{margin-left:auto;border-color:#b54d38;color:#b54d38}
+.panel{position:relative}.drawing-surface{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:hidden}
+.drawing-surface path{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.drawing-enabled .drawing-surface{pointer-events:auto;touch-action:none;cursor:crosshair}.drawings-hidden .drawing-surface{display:none}
+@media(max-width:700px){.sheet-tools{padding:9px 19px;gap:6px}.tool-btn{font-size:9px;padding:8px}}
+@media screen{html[data-theme=dark]{color-scheme:dark;--paper:#101713;--sheet:#19231e;--ink:#edf0df;--line:#465448;--muted:#b0bba9;--green:#b7cf68;--peach:#e3a18b}
+html[data-theme=dark] .meta,html[data-theme=dark] .dialog-top{background:#0d1410;color:#d4ddc9}
+html[data-theme=dark] .step:hover{background:#2b392d}
+html[data-theme=dark] .step[aria-selected=true],html[data-theme=dark] .idea-row.selected,html[data-theme=dark] .aside-risk{background:var(--green);color:#19231e}
+html[data-theme=dark] .selected .note-field,html[data-theme=dark] .selected .idx,html[data-theme=dark] .selected .name-field,html[data-theme=dark] .selected .score-select,html[data-theme=dark] .selected .pick{color:#19231e}
+html[data-theme=dark] .selected .pick{background:#19231e;color:#f9f8f3;border-color:#19231e}
+html[data-theme=dark] .selected .score-select{border-color:#63743d}
+html[data-theme=dark] .selected input::placeholder{color:#4d5e29}
+html[data-theme=dark] input::placeholder,html[data-theme=dark] textarea::placeholder{color:#9ba68f;opacity:1}
+html[data-theme=dark] .note-field,html[data-theme=dark] .connect-detail,html[data-theme=dark] .dialog-sub,html[data-theme=dark] .footnote,html[data-theme=dark] .quiet-link{color:var(--muted)}
+html[data-theme=dark] .loop-field,html[data-theme=dark] .firebase-input{background:#253328}
+html[data-theme=dark] .live-message{background:#403622;color:#f4dfaf}
+html[data-theme=dark] .file-btn:hover,html[data-theme=dark] .me-button:hover,html[data-theme=dark] .option-icon.active,html[data-theme=dark] .option-icon:hover,html[data-theme=dark] .dialog-action.secondary:hover{color:#19231e}
+html[data-theme=dark] .next:hover,html[data-theme=dark] .file-btn.dark:hover,html[data-theme=dark] .live-button:hover,html[data-theme=dark] .dialog-action:hover{background:#c0d47b;color:#19231e}
+html[data-theme=dark] .check:checked{color:#19231e}html[data-theme=dark] .tool-btn.danger{border-color:#ef9e88;color:#ef9e88}
+html[data-theme=dark] .score-select option{background:#19231e;color:#edf0df}
+html[data-theme=dark] ::selection{background:#b7cf68;color:#19231e}}
+@media print{.sheet-tools{display:none!important}}
 </style>
 </head>
 <body>
@@ -40,6 +67,13 @@
     <div class="mast-right"><div class="collab-strip"><div class="avatars" id="peer-avatars" aria-label="Online collaborators"></div><button class="me-button" id="btn-me" title="Set your name, icon, and colour"><span class="me-icon" id="me-icon">🍄</span><span id="me-name">SET NAME</span></button><button class="live-button" id="btn-live" data-kind="local" title="Team connection settings"><span class="led"></span><span id="live-label">LOCAL · CONNECT</span></button></div><div class="file-actions"><button class="file-btn" id="btn-copy" title="Copy your one-page game design to clipboard">COPY GDD ↗</button><button class="file-btn dark" id="btn-export">SAVE FILE ↓</button><button class="file-btn" id="btn-import">OPEN ↑</button><input hidden type="file" id="upload" accept="application/json,.json"></div></div>
   </div>
 </header>
+<div class="sheet-tools" aria-label="Worksheet tools">
+  <button class="tool-btn" id="btn-theme" aria-pressed="false">DARK MODE</button>
+  <button class="tool-btn" id="btn-draw" aria-pressed="false" title="Draw using your profile colour; turn off to edit text">DRAW: OFF</button>
+  <button class="tool-btn" id="btn-drawings" aria-pressed="true">HIDE DRAWINGS</button>
+  <button class="tool-btn" id="btn-undo-drawing" hidden>UNDO STROKE</button>
+  <button class="tool-btn danger" id="btn-reset" hidden>RESET DOCUMENT</button>
+</div>
 <nav class="steps" role="tablist" aria-label="Planning steps">
   <button class="step" role="tab" id="step-0" aria-controls="panel-0" aria-selected="true" data-step="0"><span class="step-num">01</span><span class="step-text">PICK THE IDEA</span><span class="step-tick" id="done-0">↗</span></button>
   <button class="step" role="tab" id="step-1" aria-controls="panel-1" aria-selected="false" data-step="1"><span class="step-num">02</span><span class="step-text">DESIGN THE GAME</span><span class="step-tick" id="done-1">↗</span></button>
@@ -120,8 +154,8 @@
 (()=>{'use strict';
 const KEY='shroomjam-field-sheet-v1';
 const seeds=[['PRE-PRODUCTION','Nov 06–07','Choose concept + finish the GDD'],['PROVE THE FUN','Nov 07–08','Playable core mechanic'],['VERTICAL SLICE','Nov 08–09','One finished minute'],['FULL GAME','Nov 09–10','Playable start to finish'],['CONTENT LOCK','Nov 10–11','All required content complete'],['TEST & PACKAGE','Nov 11–12','Outside playtest + Windows build'],['RELEASE','Nov 12–13','QA, itch page & submit']];
-const fresh=()=>({version:1,theme:'',curveball:'',ideas:Array.from({length:3},()=>({name:'',note:'',scores:[3,3,3]})),chosen:-1,pitch:'',loop:['','',''],moments:['','',''],scope:{ship:'',cut:'',risk:''},days:seeds.map(([phase,date,deliverable])=>({phase,date,deliverable,owner:'',done:false})),step:0});
-function normalize(raw){const o=fresh();if(!raw||typeof raw!=='object')return o;for(const k of ['theme','curveball','pitch'])if(typeof raw[k]==='string')o[k]=raw[k];if(Array.isArray(raw.ideas))raw.ideas.slice(0,3).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.ideas[i].name=String(x.name||'');o.ideas[i].note=String(x.note||'');if(Array.isArray(x.scores))x.scores.slice(0,3).forEach((n,j)=>o.ideas[i].scores[j]=Math.max(1,Math.min(5,Number(n)||3)));});if(Number.isInteger(raw.chosen)&&raw.chosen>=-1&&raw.chosen<3)o.chosen=raw.chosen;for(const k of ['loop','moments'])if(Array.isArray(raw[k]))raw[k].slice(0,3).forEach((x,i)=>o[k][i]=String(x||''));if(raw.scope&&typeof raw.scope==='object')for(const k of ['ship','cut','risk'])o.scope[k]=String(raw.scope[k]||'');if(Array.isArray(raw.days))raw.days.slice(0,7).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.days[i].deliverable=String(x.deliverable??o.days[i].deliverable);o.days[i].owner=String(x.owner||'');o.days[i].done=!!x.done});if(Number.isInteger(raw.step)&&raw.step>=0&&raw.step<=2)o.step=raw.step;return o;}
+const fresh=()=>({version:1,drawings:{},theme:'',curveball:'',ideas:Array.from({length:3},()=>({name:'',note:'',scores:[3,3,3]})),chosen:-1,pitch:'',loop:['','',''],moments:['','',''],scope:{ship:'',cut:'',risk:''},days:seeds.map(([phase,date,deliverable])=>({phase,date,deliverable,owner:'',done:false})),step:0});
+function normalize(raw){const o=fresh();if(!raw||typeof raw!=='object')return o;for(const k of ['theme','curveball','pitch'])if(typeof raw[k]==='string')o[k]=raw[k];if(Array.isArray(raw.ideas))raw.ideas.slice(0,3).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.ideas[i].name=String(x.name||'');o.ideas[i].note=String(x.note||'');if(Array.isArray(x.scores))x.scores.slice(0,3).forEach((n,j)=>o.ideas[i].scores[j]=Math.max(1,Math.min(5,Number(n)||3)));});if(Number.isInteger(raw.chosen)&&raw.chosen>=-1&&raw.chosen<3)o.chosen=raw.chosen;for(const k of ['loop','moments'])if(Array.isArray(raw[k]))raw[k].slice(0,3).forEach((x,i)=>o[k][i]=String(x||''));if(raw.scope&&typeof raw.scope==='object')for(const k of ['ship','cut','risk'])o.scope[k]=String(raw.scope[k]||'');if(Array.isArray(raw.days))raw.days.slice(0,7).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.days[i].deliverable=String(x.deliverable??o.days[i].deliverable);o.days[i].owner=String(x.owner||'');o.days[i].done=!!x.done});if(Number.isInteger(raw.step)&&raw.step>=0&&raw.step<=2)o.step=raw.step;if(raw.drawings&&typeof raw.drawings==='object'&&!Array.isArray(raw.drawings))o.drawings=raw.drawings;return o;}
 let s=fresh();try{s=normalize(JSON.parse(localStorage.getItem(KEY)))}catch{};
 const q=(sel,base=document)=>base.querySelector(sel),qa=(sel,base=document)=>[...base.querySelectorAll(sel)];const el=(tag,cl,txt)=>{const d=document.createElement(tag);if(cl)d.className=cl;if(txt!==undefined)d.textContent=txt;return d};
 let toastTimeout;
@@ -170,12 +204,13 @@ else continue;
 if(input){if(input.type==='checkbox')input.checked=!!val;else input.value=String(val??'');}changed=true;}
 if(changed){drawChosen();drawProgress();persist();}}
 qa('.frame input:not([type]),.frame textarea').forEach(input=>input.maxLength=4000);
-window.FieldSheet={getFlat:()=>flatten(),applyFlat,getStep:()=>s.step};
+window.FieldSheet={getFlat:()=>flatten(),getDefaults:()=>({...fieldDefaults}),applyFlat,getStep:()=>s.step,getDrawings:()=>s.drawings,setDrawings:data=>{s.drawings=data;persist()},backup:()=>download(JSON.stringify(s,null,2),'shroomjam-plan.json','application/json')};
 
 })();
 </script>
 <script src="./firebase-config.js"></script>
 <script type="module">
+import {setupSheetTools} from './sheet-tools.js';
 // ShroomJam collaboration layer. Firebase is loaded only when configured.
 // Hosting: static GitHub Pages. Shared storage + cursors: Firebase Realtime Database.
 const $ = selector => document.querySelector(selector);
@@ -193,11 +228,16 @@ if (!COLORS.includes(profile.color)) profile.color = COLORS[0];
 let cfg = window.SHROOMJAM_FIREBASE_CONFIG || readJSON(LS_CONFIG, null);
 if (cfg && (!cfg.apiKey || !cfg.authDomain || !cfg.databaseURL || !cfg.projectId)) cfg = null;
 let sdk, app, auth, database, user = null, connected = false, joined = false;
-let fieldsRef, presenceRef, roomPresenceRef, connectionRef;
+let fieldsRef, drawingsRef, presenceRef, roomPresenceRef, connectionRef;
+let unsubDrawings = null;
 let unsubFields = null, unsubPresence = null, unsubConnected = null, unsubAuth = null;
 const pending = new Map();
 const timers = new Map();
 const inflight = new Set();
+const pendingDrawings = new Map();
+const inflightDrawings = new Set();
+let lastDrawings = {};
+let resetting = false;
 let lastRemote = {};
 let activeModal = null;
 let mouseTimer = 0;
@@ -213,6 +253,11 @@ const overlay = $('#live-cursors');
 const liveLabel = $('#live-label');
 const liveButton = $('#btn-live');
 const meButton = $('#btn-me');
+const sheetTools = setupSheetTools({
+  sheet:window.FieldSheet, profile:()=>profile,
+  saveStroke:queueDrawing, removeStroke:id=>queueDrawing(id,null),
+  reset:resetDocument, report:message=>{notice(message);document.querySelector('#toast').textContent=message;document.querySelector('#toast').classList.add('show');setTimeout(()=>document.querySelector('#toast').classList.remove('show'),2500);}
+});
 
 function safeError(e) {
   if (/permission.denied|PERMISSION_DENIED/i.test(String(e?.code || '') + ' ' + String(e?.message || ''))) return 'ACCESS DENIED — Publish the supplied anonymous guest Realtime Database Rules.';
@@ -233,7 +278,8 @@ function setStatus(label, kind='local') {
 function refreshLiveStatus() {
   if (!connected || readBlocked) return;
   if (failedFields.size) {setStatus('SAVE ERROR','error');notice([...failedFields.values()].join('\n'));return;}
-  setStatus(pending.size ? 'SAVING…' : (onlineCount||1)+' ONLINE', pending.size ? 'connecting' : 'live');
+  const saving = pending.size || pendingDrawings.size || resetting;
+  setStatus(saving ? 'SAVING…' : (onlineCount||1)+' ONLINE', saving ? 'connecting' : 'live');
 }
 function updateOwnChip() {
   $('#me-icon').textContent = profile.icon;
@@ -387,9 +433,10 @@ async function initFirebase() {
 }
 function clearSubscriptions(){
   roomGeneration++;
-  unsubFields?.();unsubPresence?.();unsubConnected?.();
+  unsubFields?.();unsubPresence?.();unsubConnected?.();unsubDrawings?.();
+  unsubDrawings=null;
   unsubFields=null;unsubPresence=null;unsubConnected=null;
-  fieldsRef=null;presenceRef=null;roomPresenceRef=null;
+  fieldsRef=null;drawingsRef=null;presenceRef=null;roomPresenceRef=null;
 }
 async function joinRoom() {
   if (!user || !database) return;
@@ -397,6 +444,7 @@ async function joinRoom() {
   const generation=roomGeneration;
   connected=false;joined=false;readBlocked=false;setStatus('CONNECTING', 'connecting');notice('');
   fieldsRef = sdk.ref(database, 'rooms/'+ROOM+'/fields');
+  drawingsRef = sdk.ref(database, 'rooms/'+ROOM+'/drawings');
   roomPresenceRef=sdk.ref(database, 'rooms/'+ROOM+'/presence');
   presenceRef=sdk.ref(database, 'rooms/'+ROOM+'/presence/'+user.uid+'/'+session);
   // Atomic: only initialize an empty team sheet. A new teammate never overwrites it.
@@ -409,6 +457,10 @@ async function joinRoom() {
     readBlocked=false;
     window.FieldSheet.applyFlat(incoming,pending);
   },err=>{readBlocked=true;setStatus('READ BLOCKED','error');notice(safeError(err));});
+  unsubDrawings=sdk.onValue(drawingsRef,snap=>{
+    lastDrawings=snap.val()||{};
+    paintDrawings();
+  },err=>{notice('Drawings: '+safeError(err));});
   unsubPresence=sdk.onValue(roomPresenceRef, snap => paintPeers(snap.val()),err=>{notice(safeError(err));});
   connectionRef=sdk.ref(database,'.info/connected');
   unsubConnected=sdk.onValue(connectionRef, async snap=>{
@@ -432,9 +484,59 @@ async function joinRoom() {
   });
 }
 async function flushPending() {
-  if (!fieldsRef || !connected || !pending.size) return;
+  if (!fieldsRef || !connected) return;
   // Individual writes avoid replacing a teammate's concurrent edits.
   for (const [key, val] of [...pending]) await writeField(key);
+  for (const id of [...pendingDrawings.keys()]) await writeDrawing(id);
+}
+function paintDrawings() {
+  const visible={...lastDrawings};
+  for(const [id,value] of pendingDrawings) {
+    if(value===null) delete visible[id]; else visible[id]=value;
+  }
+  sheetTools.applyDrawings(visible);
+}
+function queueDrawing(id,data) {
+  if(resetting)return;
+  pendingDrawings.set(id,data);
+  failedFields.delete('drawing-'+id);
+  paintDrawings();
+  refreshLiveStatus();
+  writeDrawing(id);
+}
+async function writeDrawing(id) {
+  if(!joined || !connected || !drawingsRef || inflightDrawings.has(id))return;
+  inflightDrawings.add(id);
+  try {
+    while(connected && pendingDrawings.has(id)) {
+      const value=pendingDrawings.get(id);
+      await sdk.set(sdk.child(drawingsRef,id),value===null ? null : {...value,uid:user.uid});
+      if(pendingDrawings.get(id)===value)pendingDrawings.delete(id);
+    }
+    failedFields.delete('drawing-'+id);
+  } catch(error) {failedFields.set('drawing-'+id,'Could not save drawing: '+safeError(error));}
+  finally {inflightDrawings.delete(id);paintDrawings();refreshLiveStatus();}
+}
+async function resetDocument() {
+  if(!connected || !joined || resetting) {notice('Connect before resetting the shared document.');return;}
+  // Save a recoverable copy before changing any shared data.
+  window.FieldSheet.backup();
+  resetting=true;
+  frame.inert=true;
+  for(const timer of timers.values())clearTimeout(timer);
+  timers.clear();pending.clear();pendingDrawings.clear();
+  refreshLiveStatus();
+  try {
+    const deadline=Date.now()+10000;
+    while(inflight.size || inflightDrawings.size) {
+      if(!connected || Date.now()>deadline)throw Error('Wait for the connection to recover, then retry reset.');
+      await new Promise(resolve=>setTimeout(resolve,30));
+    }
+    if(!connected)throw Error('Connection lost. Reset was not sent.');
+    await sdk.update(sdk.ref(database,'rooms/'+ROOM),{fields:window.FieldSheet.getDefaults(),drawings:null});
+    failedFields.clear();notice('Shared document reset. Your JSON backup includes the previous drawings.');
+  } catch(error) {notice('Reset failed: '+safeError(error));}
+  finally {resetting=false;frame.inert=false;refreshLiveStatus();}
 }
 async function writeField(key) {
   if (!joined || !fieldsRef || !connected || inflight.has(key)) return;
@@ -455,7 +557,7 @@ async function writeField(key) {
   }
 }
 function queueEdit(key,val) {
-  if (!key) return;
+  if (!key || resetting) return;
   pending.set(key,val);
   failedFields.delete(key);
   refreshLiveStatus();
@@ -530,7 +632,10 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){pointer.ac
 document.addEventListener('shroom:edit',e=>queueEdit(e.detail.key,e.detail.value));
 document.addEventListener('focusout',()=>{if(joined && Object.keys(lastRemote).length) setTimeout(()=>window.FieldSheet.applyFlat(lastRemote,pending),0);});
 document.addEventListener('shroom:replace',()=>{
+  const imported={...window.FieldSheet.getDrawings()};
+  sheetTools.finish();
   for(const [key,value] of Object.entries(window.FieldSheet.getFlat()))queueEdit(key,value);
+  for(const id of new Set([...Object.keys(lastDrawings),...Object.keys(imported)]))queueDrawing(id,imported[id]||null);
 });
 // onDisconnect is registered again on every connection, including restored pages.
 window.addEventListener('pagehide',()=>{if(database)sdk.goOffline(database);});
