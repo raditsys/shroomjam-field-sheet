@@ -71,6 +71,7 @@ select.build-input{cursor:pointer}input[type=url].build-input:invalid{border-bot
 .build-mechanic legend,.build-reference legend{padding:0 10px 0 0}.build-example{color:var(--muted);font:11px/1.7 var(--mono);margin:20px 0}
 .build-reference-link{display:inline-block;margin-top:8px;color:var(--ink);font:10px var(--mono);text-underline-offset:3px}.build-reference-link[hidden]{display:none}
 .build-assets-section{margin-top:28px;border-top:1px solid var(--ink);padding-top:17px}.build-assets-section summary{cursor:pointer;font:700 11px var(--mono);letter-spacing:.06em}
+.live-cursors{overflow:hidden}.live-pointer{width:0;height:0}.live-pointer.align-left .live-pointer-name{transform:translate(calc(-100% + 8px),-1px)}
 .build-assets{margin-top:15px}.build-asset{border:0;border-top:1px solid var(--line);margin:0;padding:5px 0 20px;display:grid;grid-template-columns:minmax(200px,2.8fr) repeat(4,minmax(72px,1fr));column-gap:14px;min-width:0}
 .build-asset-number{font:10px var(--mono);color:var(--muted);padding-right:10px}.build-asset>.build-field:last-child{grid-column:1/-1;margin-top:7px;max-width:700px}.build-asset>.build-field:last-child .build-label{font-size:9px}.build-asset>.build-field:last-child .build-input{font-size:11px}
 @media(max-width:950px){.build-grid{gap:24px}.build-side{padding-left:24px}.build-asset{grid-template-columns:minmax(150px,2fr) repeat(4,minmax(58px,1fr));gap:10px}.step{gap:8px;padding-left:15px;padding-right:15px}.step-text{font-size:13px}}
@@ -114,7 +115,7 @@ select.build-input{cursor:pointer}input[type=url].build-input:invalid{border-bot
     </div>
   </div>
 </section>
-<section class="panel" id="panel-1" role="tabpanel" hidden>
+<section class="panel" id="panel-1" role="tabpanel" aria-labelledby="step-1" hidden>
   <div class="sheet-top"><h2 class="title">Make it <em>matter.</em></h2><div class="side-note">DAY 01 / ONE-PAGE GDD</div></div>
   <div class="plan-grid">
     <div class="plan-main"><div class="eyebrow">02A &nbsp; / &nbsp; THE EXPERIENCE</div><div class="selected-name" id="chosen-label">SELECTED IDEA &nbsp; / &nbsp; <b>NOT YET PICKED</b></div><label class="eyebrow" for="pitch">THE ONE-SENTENCE PITCH</label><textarea id="pitch" data-bind="pitch" class="type-area" rows="2" placeholder="You are a ___ who ___, but ___ ."></textarea>
@@ -125,7 +126,7 @@ select.build-input{cursor:pointer}input[type=url].build-input:invalid{border-bot
   </div>
   <div class="foot-row"><p>ONE MECHANIC &nbsp; / &nbsp; THREE BEATS &nbsp; / &nbsp; ONE FINISH LINE</p><button class="next" data-next="2">PLAN THE WEEK <span>↗</span></button></div>
 </section>
-<section class="panel" id="panel-2" role="tabpanel" hidden>
+<section class="panel" id="panel-2" role="tabpanel" aria-labelledby="step-2" hidden>
   <div class="sheet-top"><h2 class="title">Then <em>ship it.</em></h2><div class="side-note">NOV 06—13 / 7 DAYS</div></div>
   <div class="week-heading"><span>DAY</span><span>GATE</span><span>ONE DELIVERABLE</span><span>OWNER</span><span>DONE</span></div>
   <div class="week-table" id="week-table"></div>
@@ -196,7 +197,7 @@ select.build-input{cursor:pointer}input[type=url].build-input:invalid{border-bot
     </div>
   </div>
 </div>
-<script src="./build-details.js?v=1"></script>
+<script src="./build-details.js?v=2"></script>
 <script>
 (()=>{'use strict';
 window.BuildDetails.render();
@@ -217,7 +218,7 @@ function switchStep(n,scroll=true){if(!Number.isInteger(n)||n<0||n>=qa('.panel')
 const table=q('#week-table');s.days.forEach((d,i)=>{const row=el('div','week-row');row.dataset.index=i;const day=el('div','day-tag',String(i+1).padStart(2,'0'));const gate=el('div','phase',seeds[i][0]);const date=el('small','date',seeds[i][1]);gate.append(date);const target=el('input','week-target');target.dataset.day=i;target.setAttribute('aria-label',`Day ${i+1} deliverable`);target.placeholder='One thing to finish';const owner=el('input','owner');owner.dataset.owner=i;owner.setAttribute('aria-label',`Day ${i+1} owner`);owner.placeholder='NAME';const box=el('input','check');box.type='checkbox';box.dataset.done=i;box.setAttribute('aria-label',`Mark day ${i+1} complete`);row.append(day,gate,target,owner,box);table.append(row)});
 qa('[data-score]').forEach(sel=>{for(let n=1;n<=5;n++){const opt=document.createElement('option');opt.value=n;opt.textContent=n;sel.append(opt)}});
 fill();
-document.addEventListener('input',e=>{const x=e.target;let key=null;if(x.hasAttribute('data-build')){s.build[x.dataset.build]=x.value;persist();if(!window.BuildDetails.valid(x.dataset.build,x.value))return;key='build_'+x.dataset.build;}else if(x.hasAttribute('data-bind')){s[x.dataset.bind]=x.value;key=x.dataset.bind;}else if(x.hasAttribute('data-name')){s.ideas[+x.dataset.name].name=x.value;key='idea_'+x.dataset.name+'_name';}else if(x.hasAttribute('data-note')){s.ideas[+x.dataset.note].note=x.value;key='idea_'+x.dataset.note+'_note';}else if(x.hasAttribute('data-loop')){s.loop[+x.dataset.loop]=x.value;key='loop_'+x.dataset.loop;}else if(x.hasAttribute('data-moment')){s.moments[+x.dataset.moment]=x.value;key='moment_'+x.dataset.moment;}else if(x.hasAttribute('data-scope')){s.scope[x.dataset.scope]=x.value;key='scope_'+x.dataset.scope;}else if(x.hasAttribute('data-day')){s.days[+x.dataset.day].deliverable=x.value;key='day_'+x.dataset.day+'_deliverable';}else if(x.hasAttribute('data-owner')){s.days[+x.dataset.owner].owner=x.value;key='day_'+x.dataset.owner+'_owner';}else return;drawChosen();persist();document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key,value:x.value}}))});
+document.addEventListener('input',e=>{const x=e.target;let key=null;if(x.hasAttribute('data-build')){s.build[x.dataset.build]=window.BuildDetails.clean(x.dataset.build,x.value);persist();if(!window.BuildDetails.valid(x.dataset.build,s.build[x.dataset.build]))return;key='build_'+x.dataset.build;}else if(x.hasAttribute('data-bind')){s[x.dataset.bind]=x.value;key=x.dataset.bind;}else if(x.hasAttribute('data-name')){s.ideas[+x.dataset.name].name=x.value;key='idea_'+x.dataset.name+'_name';}else if(x.hasAttribute('data-note')){s.ideas[+x.dataset.note].note=x.value;key='idea_'+x.dataset.note+'_note';}else if(x.hasAttribute('data-loop')){s.loop[+x.dataset.loop]=x.value;key='loop_'+x.dataset.loop;}else if(x.hasAttribute('data-moment')){s.moments[+x.dataset.moment]=x.value;key='moment_'+x.dataset.moment;}else if(x.hasAttribute('data-scope')){s.scope[x.dataset.scope]=x.value;key='scope_'+x.dataset.scope;}else if(x.hasAttribute('data-day')){s.days[+x.dataset.day].deliverable=x.value;key='day_'+x.dataset.day+'_deliverable';}else if(x.hasAttribute('data-owner')){s.days[+x.dataset.owner].owner=x.value;key='day_'+x.dataset.owner+'_owner';}else return;drawChosen();persist();document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key,value:key.startsWith('build_')?s.build[x.dataset.build]:x.value}}))});
 document.addEventListener('change',e=>{const x=e.target;if(x.hasAttribute('data-score')){const [i,j]=x.dataset.score.split('-').map(Number);s.ideas[i].scores[j]=Number(x.value);drawChosen();persist();document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key:'idea_'+i+'_score_'+j,value:Number(x.value)}}))}if(x.hasAttribute('data-done')){s.days[+x.dataset.done].done=x.checked;persist();document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key:'day_'+x.dataset.done+'_done',value:x.checked}}))}});
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-pick')){s.chosen=+b.dataset.pick;drawChosen();persist();toast('IDEA SELECTED');document.dispatchEvent(new CustomEvent('shroom:edit',{detail:{key:'chosen',value:s.chosen}}))}if(b.hasAttribute('data-step'))switchStep(+b.dataset.step);if(b.hasAttribute('data-next')){if(b.dataset.next==='1'&&s.chosen<0){toast('PICK A CONCEPT FIRST');return}switchStep(+b.dataset.next)}});
 function baseGdText(){const v=x=>x&&String(x).trim()?String(x).trim():'—';const picked=s.chosen>=0?s.ideas[s.chosen].name:'Not chosen';return `# SHROOMJAM 2026 — FIELD SHEET\n\nTheme: ${v(s.theme)}\nCurveball: ${v(s.curveball)}\n\n## Chosen idea: ${v(picked)}\n${s.chosen>=0?v(s.ideas[s.chosen].note):''}\n\n## Pitch\n${v(s.pitch)}\n\n## Core loop\n${s.loop.map(v).join(' → ')}\n\n## Three aha moments\n1. ${v(s.moments[0])}\n2. ${v(s.moments[1])}\n3. ${v(s.moments[2])}\n\n## Scope\nMust ship: ${v(s.scope.ship)}\nCut first: ${v(s.scope.cut)}\nRisk / fallback: ${v(s.scope.risk)}\n\n## Seven-day plan\n${s.days.map((d,i)=>`- [${d.done?'x':' '}] Day ${i+1} · ${d.phase} · ${v(d.deliverable)} (${v(d.owner)})`).join('\n')}\n`}
@@ -432,6 +433,7 @@ function paintPeers(raw) {
     marker.style.setProperty('--cursor-color', p.color);
     marker.querySelector('.live-pointer-name').textContent=p.icon+' '+p.name;
     marker.style.left=(p.x*100)+'%';marker.style.top=(p.y*100)+'%';
+    marker.classList.toggle('align-left',p.x>.65);
     marker.hidden = !p.active || p.step !== window.FieldSheet.getStep();
   });
   [...overlay.children].forEach(child => {if (!known.has(child.id.replace('cursor-', ''))) child.remove();});

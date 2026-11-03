@@ -101,10 +101,14 @@
       && (!entry.options || value==='' || entry.options.includes(value))
       && (!entry.url || value==='' || !!safeURL(value));
   }
+  function clean(key,value) {return schema[key]?.url && safeURL(value) ? safeURL(value) : value;}
   function defaults() {return Object.fromEntries(Object.keys(schema).map(key=>[key,'']));}
   function normalize(raw) {
     const result=defaults();
-    for (const key of Object.keys(result)) if(valid(key,raw?.[key])) result[key]=raw[key];
+    for (const key of Object.keys(result)) {
+      const value=clean(key,raw?.[key]);
+      if(valid(key,value))result[key]=value;
+    }
     return result;
   }
   function refresh() {
@@ -143,5 +147,5 @@
     if(assets.length)lines.push('### Assets to ship\n'+assets.join('\n'));
     return lines.length ? '\n## Build the details\n\n'+lines.join('\n\n')+'\n' : '';
   }
-  window.BuildDetails={render,defaults,normalize,valid,refresh,markdown};
+  window.BuildDetails={render,defaults,normalize,valid,clean,refresh,markdown};
 })();
