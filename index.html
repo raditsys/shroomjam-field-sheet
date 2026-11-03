@@ -34,6 +34,7 @@
 .tool-btn{border:1px solid var(--line);background:transparent;padding:7px 10px;font:10px var(--mono);letter-spacing:.02em}
 .tool-btn:hover,.tool-btn[aria-pressed=true]{background:var(--green);color:#19231e;border-color:var(--ink)}
 .tool-btn[hidden]{display:none!important}.tool-btn.danger{margin-left:auto;border-color:#b54d38;color:#b54d38}
+.owner-dialog{padding:0;color:var(--ink)}.owner-dialog::backdrop{background:#101713b8}.owner-dialog input{color:var(--ink)}.owner-error{color:#b54d38;font:12px var(--mono)}
 .panel{position:relative}.drawing-surface{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:hidden}
 .drawing-surface path{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .drawing-enabled .drawing-surface{pointer-events:auto;touch-action:none;cursor:crosshair}.drawings-hidden .drawing-surface{display:none}
@@ -54,6 +55,7 @@ html[data-theme=dark] .file-btn:hover,html[data-theme=dark] .me-button:hover,htm
 html[data-theme=dark] .next:hover,html[data-theme=dark] .file-btn.dark:hover,html[data-theme=dark] .live-button:hover,html[data-theme=dark] .dialog-action:hover{background:#c0d47b;color:#19231e}
 html[data-theme=dark] .check:checked{color:#19231e}html[data-theme=dark] .tool-btn.danger{border-color:#ef9e88;color:#ef9e88}
 html[data-theme=dark] .score-select option{background:#19231e;color:#edf0df}
+html[data-theme=dark] .live-button{background:#29392c;color:var(--ink)}html[data-theme=dark] .owner-error{color:#ef9e88}
 html[data-theme=dark] ::selection{background:#b7cf68;color:#19231e}}
 @media print{.sheet-tools{display:none!important}}
 </style>
@@ -256,7 +258,7 @@ const meButton = $('#btn-me');
 const sheetTools = setupSheetTools({
   sheet:window.FieldSheet, profile:()=>profile,
   saveStroke:queueDrawing, removeStroke:id=>queueDrawing(id,null),
-  reset:resetDocument, report:message=>{notice(message);document.querySelector('#toast').textContent=message;document.querySelector('#toast').classList.add('show');setTimeout(()=>document.querySelector('#toast').classList.remove('show'),2500);}
+  reset:resetDocument
 });
 
 function safeError(e) {
@@ -655,5 +657,21 @@ if(cfg) initFirebase(); else setStatus('LOCAL · CONNECT','local');
 showConnectState();
 
 </script>
+<dialog class="live-dialog owner-dialog" id="owner-dialog" aria-labelledby="owner-title">
+  <div class="dialog-top">SHROOMJAM / OWNER</div>
+  <div class="dialog-body">
+    <h2 class="dialog-h" id="owner-title">Owner controls</h2>
+    <form id="owner-unlock">
+      <label class="dialog-label" for="owner-password">OWNER PASSWORD</label>
+      <input class="profile-name-input" id="owner-password" type="password" autocomplete="off" required>
+      <p class="owner-error" id="owner-error" role="alert" hidden>Incorrect owner password.</p>
+      <div class="dialog-actions"><button class="dialog-action secondary" type="button" data-owner-cancel>CANCEL</button><button class="dialog-action" type="submit">UNLOCK RESET</button></div>
+    </form>
+    <div id="owner-confirm" hidden>
+      <p class="dialog-sub">Reset the shared document and all drawings for everyone? A JSON backup downloads first.</p>
+      <div class="dialog-actions"><button class="dialog-action secondary" type="button" data-owner-cancel>CANCEL</button><button class="dialog-action" id="btn-confirm-reset" type="button">RESET FOR EVERYONE</button></div>
+    </div>
+  </div>
+</dialog>
 </body>
 </html>

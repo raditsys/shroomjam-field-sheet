@@ -3,7 +3,7 @@ const COLORS = ['#d5ec76', '#f3a38e', '#84c7de', '#ad9fee', '#f2c96b', '#a7dec2'
 const LIGHT_INK = ['#637818', '#b6412b', '#166784', '#6547a3', '#a36c0d', '#287554'];
 const SVG = 'http://www.w3.org/2000/svg';
 
-export function setupSheetTools({sheet, profile, saveStroke, removeStroke, reset, report}) {
+export function setupSheetTools({sheet, profile, saveStroke, removeStroke, reset}) {
   const $ = selector => document.querySelector(selector);
   const layers = [...document.querySelectorAll('.panel')].map((panel, step) => {
     const layer = document.createElementNS(SVG, 'svg');
@@ -133,17 +133,35 @@ export function setupSheetTools({sheet, profile, saveStroke, removeStroke, reset
     if (id) removeStroke(id);
   });
   let logoClicks = [];
+  const ownerDialog = $('#owner-dialog');
+  function showOwnerDialog(confirmReset) {
+    $('#owner-unlock').hidden = confirmReset;
+    $('#owner-confirm').hidden = !confirmReset;
+    $('#owner-error').hidden = true;
+    $('#owner-password').value = '';
+    $('#owner-title').textContent = confirmReset ? 'Reset the shared sheet?' : 'Owner controls';
+    ownerDialog.showModal();
+    if (!confirmReset) $('#owner-password').focus();
+  }
   $('.logo').addEventListener('click', () => {
     const now = performance.now();
     logoClicks = [...logoClicks.filter(time => now-time < 3000),now];
     if (logoClicks.length < 5) return;
     logoClicks = [];
-    // This is an intentional casual UI lock, not server-side authorization.
-    if (prompt('Owner password') === 'bignut') $('#btn-reset').hidden = false;
-    else report('Incorrect owner password.');
+    showOwnerDialog(false);
   });
-  $('#btn-reset').addEventListener('click', async () => {
-    if (!confirm('Reset the shared document and all drawings for everyone? A JSON backup downloads first.')) return;
+  $('#owner-unlock').addEventListener('submit', event => {
+    event.preventDefault();
+    // This is an intentional casual UI lock, not server-side authorization.
+    if ($('#owner-password').value !== 'bignut') {$('#owner-error').hidden=false;return;}
+    $('#btn-reset').hidden = false;
+    ownerDialog.close();
+  });
+  ownerDialog.addEventListener('close', () => {$('#owner-password').value='';});
+  ownerDialog.querySelectorAll('[data-owner-cancel]').forEach(button => button.addEventListener('click',()=>ownerDialog.close()));
+  $('#btn-reset').addEventListener('click', () => showOwnerDialog(true));
+  $('#btn-confirm-reset').addEventListener('click', async () => {
+    ownerDialog.close();
     drawMode(false);
     await reset();
   });
