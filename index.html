@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#e9e8df">
 <title>SHROOMJAM — The Live Field Sheet</title>
+<script>window.ShroomSheet=[2,3].includes(Number(new URLSearchParams(location.search).get('sheet')))?Number(new URLSearchParams(location.search).get('sheet')):1;</script>
+<link rel="stylesheet" href="./sheet-extras.css?v=1">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem('shroomjam:theme')==='dark'?'dark':'light'}catch{}</script>
 <style>
 :root{--paper:#e9e8df;--sheet:#f9f8f3;--ink:#19231e;--line:#c8cac1;--muted:#767c74;--green:#d5ec76;--peach:#f3a38e;--white:#fff;--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;--sans:"Helvetica Neue",Helvetica,Arial,sans-serif;--serif:Georgia,"Times New Roman",serif}
@@ -82,12 +84,18 @@ select.build-input{cursor:pointer}input[type=url].build-input:invalid{border-bot
 <body>
 <div class="frame">
 <header>
-  <div class="meta"><span>FIELD SHEET &nbsp; / &nbsp; 001</span><span>NOV 06—13 &nbsp; · &nbsp; 2026</span></div>
+  <div class="meta"><span>FIELD SHEET &nbsp; / &nbsp; <b id="sheet-number">001</b></span><span>NOV 06—13 &nbsp; · &nbsp; 2026</span></div>
   <div class="marquee">
     <div class="mark"><span class="glyph" aria-hidden="true"></span><h1 class="logo">SHROOM<br>JAM<small>®</small></h1></div>
     <div class="mast-right"><div class="collab-strip"><div class="avatars" id="peer-avatars" aria-label="Online collaborators"></div><button class="me-button" id="btn-me" title="Set your name, icon, and colour"><span class="me-icon" id="me-icon">🍄</span><span id="me-name">SET NAME</span></button><button class="live-button" id="btn-live" data-kind="local" title="Team connection settings"><span class="led"></span><span id="live-label">LOCAL · CONNECT</span></button></div><div class="file-actions"><button class="file-btn" id="btn-copy" title="Copy your one-page game design to clipboard">COPY GDD ↗</button><button class="file-btn dark" id="btn-export">SAVE FILE ↓</button><button class="file-btn" id="btn-import">OPEN ↑</button><input hidden type="file" id="upload" accept="application/json,.json"></div></div>
   </div>
 </header>
+<nav class="sheet-tabs" aria-label="Sheets">
+  <button class="tool-btn" data-sheet="1" aria-current="page">1ST SHEET</button>
+  <button class="tool-btn" data-sheet="2" hidden>2ND SHEET</button>
+  <button class="tool-btn" data-sheet="3" hidden>3RD SHEET</button>
+  <button class="tool-btn" id="btn-new-sheet">+ NEW SHEET</button>
+</nav>
 <div class="sheet-tools" aria-label="Worksheet tools">
   <button class="tool-btn" id="btn-theme" aria-pressed="false">DARK MODE</button>
   <button class="tool-btn" id="btn-draw" aria-pressed="false" title="Draw using your profile colour; turn off to edit text">DRAW: OFF</button>
@@ -157,6 +165,16 @@ select.build-input{cursor:pointer}input[type=url].build-input:invalid{border-bot
   </details>
 </section>
 </main>
+<details class="image-board" id="image-board">
+  <summary>IMAGES / INSPIRATION <span id="image-count">0 / 8</span></summary>
+  <div class="image-paste" id="image-paste" tabindex="0" role="group" aria-label="Paste images here">
+    <p>CLICK HERE, THEN PASTE AN IMAGE<br>or drop an image here</p>
+    <button class="tool-btn" id="btn-add-image">CHOOSE IMAGE ↑</button>
+    <input type="file" id="image-upload" hidden accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/bmp" multiple>
+  </div>
+  <p class="image-status" id="image-status" role="status">Up to 8 images per sheet. Compressed automatically; shared with everyone on this sheet.</p>
+  <div class="sheet-images" id="sheet-images"></div>
+</details>
 <!-- The fourth page uses the same worksheet language and independent shared fields. -->
 <footer class="bottom"><span class="status" id="status">SAVED LOCALLY</span><span class="tiny">ONE IDEA. ONE SHARED SHEET.</span><span class="mini-counter" id="counter">01 / 04</span></footer>
 <div class="live-cursors" id="live-cursors" aria-hidden="true"></div>
@@ -201,10 +219,10 @@ select.build-input{cursor:pointer}input[type=url].build-input:invalid{border-bot
 <script>
 (()=>{'use strict';
 window.BuildDetails.render();
-const KEY='shroomjam-field-sheet-v1';
+const KEY='shroomjam-field-sheet-v1'+(window.ShroomSheet===1?'':':sheet-'+window.ShroomSheet);
 const seeds=[['PRE-PRODUCTION','Nov 06–07','Choose concept + finish the GDD'],['PROVE THE FUN','Nov 07–08','Playable core mechanic'],['VERTICAL SLICE','Nov 08–09','One finished minute'],['FULL GAME','Nov 09–10','Playable start to finish'],['CONTENT LOCK','Nov 10–11','All required content complete'],['TEST & PACKAGE','Nov 11–12','Outside playtest + Windows build'],['RELEASE','Nov 12–13','QA, itch page & submit']];
-const fresh=()=>({version:2,build:window.BuildDetails.defaults(),drawings:{},theme:'',curveball:'',ideas:Array.from({length:3},()=>({name:'',note:'',scores:[3,3,3]})),chosen:-1,pitch:'',loop:['','',''],moments:['','',''],scope:{ship:'',cut:'',risk:''},days:seeds.map(([phase,date,deliverable])=>({phase,date,deliverable,owner:'',done:false})),step:0});
-function normalize(raw){const o=fresh();if(!raw||typeof raw!=='object')return o;for(const k of ['theme','curveball','pitch'])if(typeof raw[k]==='string')o[k]=raw[k];if(Array.isArray(raw.ideas))raw.ideas.slice(0,3).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.ideas[i].name=String(x.name||'');o.ideas[i].note=String(x.note||'');if(Array.isArray(x.scores))x.scores.slice(0,3).forEach((n,j)=>o.ideas[i].scores[j]=Math.max(1,Math.min(5,Number(n)||3)));});if(Number.isInteger(raw.chosen)&&raw.chosen>=-1&&raw.chosen<3)o.chosen=raw.chosen;for(const k of ['loop','moments'])if(Array.isArray(raw[k]))raw[k].slice(0,3).forEach((x,i)=>o[k][i]=String(x||''));if(raw.scope&&typeof raw.scope==='object')for(const k of ['ship','cut','risk'])o.scope[k]=String(raw.scope[k]||'');if(Array.isArray(raw.days))raw.days.slice(0,7).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.days[i].deliverable=String(x.deliverable??o.days[i].deliverable);o.days[i].owner=String(x.owner||'');o.days[i].done=!!x.done});if(Number.isInteger(raw.step)&&raw.step>=0&&raw.step<=3)o.step=raw.step;if(raw.drawings&&typeof raw.drawings==='object'&&!Array.isArray(raw.drawings))o.drawings=raw.drawings;o.build=window.BuildDetails.normalize(raw.build);return o;}
+const fresh=()=>({version:3,images:{},build:window.BuildDetails.defaults(),drawings:{},theme:'',curveball:'',ideas:Array.from({length:3},()=>({name:'',note:'',scores:[3,3,3]})),chosen:-1,pitch:'',loop:['','',''],moments:['','',''],scope:{ship:'',cut:'',risk:''},days:seeds.map(([phase,date,deliverable])=>({phase,date,deliverable,owner:'',done:false})),step:0});
+function normalize(raw){const o=fresh();if(!raw||typeof raw!=='object')return o;for(const k of ['theme','curveball','pitch'])if(typeof raw[k]==='string')o[k]=raw[k];if(Array.isArray(raw.ideas))raw.ideas.slice(0,3).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.ideas[i].name=String(x.name||'');o.ideas[i].note=String(x.note||'');if(Array.isArray(x.scores))x.scores.slice(0,3).forEach((n,j)=>o.ideas[i].scores[j]=Math.max(1,Math.min(5,Number(n)||3)));});if(Number.isInteger(raw.chosen)&&raw.chosen>=-1&&raw.chosen<3)o.chosen=raw.chosen;for(const k of ['loop','moments'])if(Array.isArray(raw[k]))raw[k].slice(0,3).forEach((x,i)=>o[k][i]=String(x||''));if(raw.scope&&typeof raw.scope==='object')for(const k of ['ship','cut','risk'])o.scope[k]=String(raw.scope[k]||'');if(Array.isArray(raw.days))raw.days.slice(0,7).forEach((x,i)=>{if(!x||typeof x!=='object')return;o.days[i].deliverable=String(x.deliverable??o.days[i].deliverable);o.days[i].owner=String(x.owner||'');o.days[i].done=!!x.done});if(Number.isInteger(raw.step)&&raw.step>=0&&raw.step<=3)o.step=raw.step;if(raw.drawings&&typeof raw.drawings==='object'&&!Array.isArray(raw.drawings))o.drawings=raw.drawings;o.images=window.normalizeSheetImages?window.normalizeSheetImages(raw.images):raw.images&&typeof raw.images==='object'?raw.images:{};o.build=window.BuildDetails.normalize(raw.build);return o;}
 let s=fresh();try{s=normalize(JSON.parse(localStorage.getItem(KEY)))}catch{};
 const q=(sel,base=document)=>base.querySelector(sel),qa=(sel,base=document)=>[...base.querySelectorAll(sel)];const el=(tag,cl,txt)=>{const d=document.createElement(tag);if(cl)d.className=cl;if(txt!==undefined)d.textContent=txt;return d};
 let toastTimeout;
@@ -256,19 +274,23 @@ if(input){if(input.type==='checkbox')input.checked=!!val;else input.value=String
 if(changed){window.BuildDetails.refresh();drawChosen();drawProgress();persist();}}
 qa('.frame input:not([type]),.frame textarea').forEach(input=>input.maxLength=4000);
 document.querySelector('.steps').addEventListener('keydown',event=>{if(!event.target.matches('.step'))return;const keys={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1};let next;if(event.key in keys)next=(s.step+keys[event.key]+4)%4;else if(event.key==='Home')next=0;else if(event.key==='End')next=3;else return;event.preventDefault();switchStep(next,false);q('#step-'+next).focus()});
-window.FieldSheet={getFlat:()=>flatten(),getDefaults:()=>({...fieldDefaults}),applyFlat,getStep:()=>s.step,getDrawings:()=>s.drawings,setDrawings:data=>{s.drawings=data;persist()},backup:()=>download(JSON.stringify(s,null,2),'shroomjam-plan.json','application/json')};
+window.FieldSheet={getFlat:()=>flatten(),getDefaults:()=>({...fieldDefaults}),applyFlat,getStep:()=>s.step,getImages:()=>s.images,setImages:data=>{s.images=data;persist()},getDrawings:()=>s.drawings,setDrawings:data=>{s.drawings=data;persist()},backup:()=>download(JSON.stringify(s,null,2),'shroomjam-plan.json','application/json')};
 
 })();
 </script>
 <script src="./firebase-config.js"></script>
 <script type="module">
 import {setupSheetTools} from './sheet-tools.js?v=2';
+import {setupExtras, normalizeImages} from './sheet-extras.js?v=1';
+window.normalizeSheetImages=normalizeImages;
+window.FieldSheet.setImages(normalizeImages(window.FieldSheet.getImages()));
 // ShroomJam collaboration layer. Firebase is loaded only when configured.
 // Hosting: static GitHub Pages. Shared storage + cursors: Firebase Realtime Database.
 const $ = selector => document.querySelector(selector);
 const LS_CONFIG = 'shroomjam:firebase-config:v1';
 const LS_PROFILE = 'shroomjam:my-profile:v1';
-const ROOM = 'shroomjam-2026';
+const roomFor = n => 'shroomjam-2026'+(n===1?'':'-'+n);
+const ROOM = roomFor(window.ShroomSheet);
 const EMOJIS = ['🍄', '🐸', '🪿', '🐌', '🦝', '🦀', '🧀', '👁️'];
 const COLORS = ['#d5ec76', '#f3a38e', '#84c7de', '#ad9fee', '#f2c96b', '#a7dec2'];
 const defaults = { name: '', icon: '🍄', color: COLORS[0] };
@@ -280,7 +302,11 @@ if (!COLORS.includes(profile.color)) profile.color = COLORS[0];
 let cfg = window.SHROOMJAM_FIREBASE_CONFIG || readJSON(LS_CONFIG, null);
 if (cfg && (!cfg.apiKey || !cfg.authDomain || !cfg.databaseURL || !cfg.projectId)) cfg = null;
 let sdk, app, auth, database, user = null, connected = false, joined = false;
-let fieldsRef, drawingsRef, presenceRef, roomPresenceRef, connectionRef;
+let fieldsRef, imagesRef, drawingsRef, presenceRef, roomPresenceRef, connectionRef;
+let unsubImages=null;
+let sheetSubscriptions=[];
+const pendingImages=new Map(), inflightImages=new Set();
+let lastImages={};
 let unsubDrawings = null;
 let unsubFields = null, unsubPresence = null, unsubConnected = null, unsubAuth = null;
 const pending = new Map();
@@ -311,6 +337,8 @@ const sheetTools = setupSheetTools({
   reset:resetDocument
 });
 
+const extras=setupExtras({sheet:window.FieldSheet,saveImage:queueImage,navigate:navigateSheet,notify:notice,localOnly:!cfg});
+
 function safeError(e) {
   if (/permission.denied|PERMISSION_DENIED/i.test(String(e?.code || '') + ' ' + String(e?.message || ''))) return 'ACCESS DENIED — Publish the supplied anonymous guest Realtime Database Rules.';
   if (/operation-not-allowed/.test(e?.code || '')) return 'ANONYMOUS SIGN-IN DISABLED — Enable Anonymous in Firebase Authentication → Sign-in method.';
@@ -330,7 +358,7 @@ function setStatus(label, kind='local') {
 function refreshLiveStatus() {
   if (!connected || readBlocked) return;
   if (failedFields.size) {setStatus('SAVE ERROR','error');notice([...failedFields.values()].join('\n'));return;}
-  const saving = pending.size || pendingDrawings.size || resetting;
+  const saving = pending.size || pendingDrawings.size || pendingImages.size || resetting;
   setStatus(saving ? 'SAVING…' : (onlineCount||1)+' ONLINE', saving ? 'connecting' : 'live');
 }
 function updateOwnChip() {
@@ -487,9 +515,9 @@ async function initFirebase() {
 function clearSubscriptions(){
   roomGeneration++;
   unsubFields?.();unsubPresence?.();unsubConnected?.();unsubDrawings?.();
-  unsubDrawings=null;
+  unsubDrawings=null;unsubImages?.();unsubImages=null;sheetSubscriptions.forEach(unsubscribe=>unsubscribe());sheetSubscriptions=[];
   unsubFields=null;unsubPresence=null;unsubConnected=null;
-  fieldsRef=null;drawingsRef=null;presenceRef=null;roomPresenceRef=null;
+  fieldsRef=null;drawingsRef=null;imagesRef=null;presenceRef=null;roomPresenceRef=null;
 }
 async function joinRoom() {
   if (!user || !database) return;
@@ -498,6 +526,7 @@ async function joinRoom() {
   connected=false;joined=false;readBlocked=false;setStatus('CONNECTING', 'connecting');notice('');
   fieldsRef = sdk.ref(database, 'rooms/'+ROOM+'/fields');
   drawingsRef = sdk.ref(database, 'rooms/'+ROOM+'/drawings');
+  imagesRef = sdk.ref(database, 'rooms/'+ROOM+'/images');
   roomPresenceRef=sdk.ref(database, 'rooms/'+ROOM+'/presence');
   presenceRef=sdk.ref(database, 'rooms/'+ROOM+'/presence/'+user.uid+'/'+session);
   // Atomic: only initialize an empty team sheet. A new teammate never overwrites it.
@@ -514,6 +543,8 @@ async function joinRoom() {
     lastDrawings=snap.val()||{};
     paintDrawings();
   },err=>{notice('Drawings: '+safeError(err));});
+  unsubImages=sdk.onValue(imagesRef,snap=>{lastImages=normalizeImages(snap.val()||{});paintImages();},err=>notice('Images: '+safeError(err)));
+  for(const n of [2,3])sheetSubscriptions.push(sdk.onValue(sdk.ref(database,'rooms/'+roomFor(n)+'/fields/chosen'),snap=>extras.setAvailable(n,snap.exists()),err=>notice('Sheets: '+safeError(err))));
   unsubPresence=sdk.onValue(roomPresenceRef, snap => paintPeers(snap.val()),err=>{notice(safeError(err));});
   connectionRef=sdk.ref(database,'.info/connected');
   unsubConnected=sdk.onValue(connectionRef, async snap=>{
@@ -541,7 +572,71 @@ async function flushPending() {
   // Individual writes avoid replacing a teammate's concurrent edits.
   for (const [key, val] of [...pending]) await writeField(key);
   for (const id of [...pendingDrawings.keys()]) await writeDrawing(id);
+  for (const id of [...pendingImages.keys()]) await writeImage(id);
 }
+function paintImages() {
+  const visible={...lastImages};
+  for(const [id,value] of pendingImages) {
+    if(value===null)delete visible[id];else visible[id]=value;
+  }
+  extras.applyImages(visible);
+}
+function queueImage(id,data) {
+  if(resetting)return;
+  pendingImages.set(id,data);
+  failedFields.delete('image-'+id);
+  paintImages();refreshLiveStatus();writeImage(id);
+}
+async function writeImage(id) {
+  if(!joined || !connected || !imagesRef || inflightImages.has(id))return;
+  inflightImages.add(id);
+  try {
+    while(connected && pendingImages.has(id)) {
+      const value=pendingImages.get(id);
+      // Merge only the image board; concurrent additions cannot overwrite each other.
+      const result=await sdk.runTransaction(imagesRef,current=>{
+        const images={...current};
+        let slot=Object.keys(images).find(key=>images[key]?.id===id);
+        if(value===null){if(slot!==undefined)delete images[slot];}
+        else {
+          slot ??= ['0','1','2','3','4','5','6','7'].find(key=>!images[key]);
+          if(slot===undefined)return;
+          images[slot]={...value,id,uid:user.uid};
+        }
+        return Object.keys(images).length?images:null;
+      },{applyLocally:false});
+      if(pendingImages.get(id)===value)pendingImages.delete(id);
+      if(!result.committed){$('#image-status').textContent='Sheet full: eight images maximum. Remove one before adding another.';break;}
+    }
+    failedFields.delete('image-'+id);
+  } catch(error) {failedFields.set('image-'+id,'Could not save image: '+safeError(error));}
+  finally {inflightImages.delete(id);paintImages();refreshLiveStatus();}
+}
+let navigating=false;
+async function navigateSheet(number) {
+  if(navigating || resetting)return;
+  if(extras.isBusy()){notice('Wait for the image to finish preparing.');return;}
+  navigating=true;sheetTools.finish();frame.inert=true;
+  try {
+    for(const timer of timers.values())clearTimeout(timer);
+    timers.clear();
+    const deadline=Date.now()+15000;
+    while(pending.size || pendingDrawings.size || pendingImages.size || inflight.size || inflightDrawings.size || inflightImages.size) {
+      if(!cfg)break; // The current sheet already has its own local backup.
+      if(!connected || failedFields.size || Date.now()>deadline)throw Error('Save pending edits before switching sheets. Reconnect or export a backup.');
+      await flushPending();
+      if(inflight.size || inflightDrawings.size || inflightImages.size)await new Promise(resolve=>setTimeout(resolve,40));
+    }
+    const url=new URL(location.href);url.hash='';
+    if(number===1)url.searchParams.delete('sheet');else url.searchParams.set('sheet',number);
+    location.assign(url.href);
+  } catch(error) {notice(error.message);navigating=false;frame.inert=false;}
+}
+window.addEventListener('beforeunload',event=>{
+  if(!navigating && (pending.size || pendingDrawings.size || pendingImages.size || extras.isBusy())) {
+    event.preventDefault();event.returnValue='';
+  }
+});
 function paintDrawings() {
   const visible={...lastDrawings};
   for(const [id,value] of pendingDrawings) {
@@ -572,22 +667,23 @@ async function writeDrawing(id) {
 }
 async function resetDocument() {
   if(!connected || !joined || resetting) {notice('Connect before resetting the shared document.');return;}
+  if(extras.isBusy()){notice('Wait for the image to finish preparing before resetting.');return;}
   // Save a recoverable copy before changing any shared data.
   window.FieldSheet.backup();
   resetting=true;
   frame.inert=true;
   for(const timer of timers.values())clearTimeout(timer);
-  timers.clear();pending.clear();pendingDrawings.clear();
+  timers.clear();pending.clear();pendingDrawings.clear();pendingImages.clear();
   refreshLiveStatus();
   try {
     const deadline=Date.now()+10000;
-    while(inflight.size || inflightDrawings.size) {
+    while(inflight.size || inflightDrawings.size || inflightImages.size) {
       if(!connected || Date.now()>deadline)throw Error('Wait for the connection to recover, then retry reset.');
       await new Promise(resolve=>setTimeout(resolve,30));
     }
     if(!connected)throw Error('Connection lost. Reset was not sent.');
-    await sdk.update(sdk.ref(database,'rooms/'+ROOM),{fields:window.FieldSheet.getDefaults(),drawings:null});
-    failedFields.clear();notice('Shared document reset. Your JSON backup includes the previous drawings.');
+    await sdk.update(sdk.ref(database,'rooms/'+ROOM),{fields:window.FieldSheet.getDefaults(),drawings:null,images:null});
+    failedFields.clear();notice('Current sheet reset. Your JSON backup includes its previous drawings and images.');
   } catch(error) {notice('Reset failed: '+safeError(error));}
   finally {resetting=false;frame.inert=false;refreshLiveStatus();}
 }
@@ -686,9 +782,11 @@ document.addEventListener('shroom:edit',e=>queueEdit(e.detail.key,e.detail.value
 document.addEventListener('focusout',()=>{if(joined && Object.keys(lastRemote).length) setTimeout(()=>window.FieldSheet.applyFlat(lastRemote,pending),0);});
 document.addEventListener('shroom:replace',()=>{
   const imported={...window.FieldSheet.getDrawings()};
+  const importedImages={...window.FieldSheet.getImages()};
   sheetTools.finish();
   for(const [key,value] of Object.entries(window.FieldSheet.getFlat()))queueEdit(key,value);
   for(const id of new Set([...Object.keys(lastDrawings),...Object.keys(imported)]))queueDrawing(id,imported[id]||null);
+  for(const id of new Set([...Object.keys(lastImages),...Object.keys(importedImages)]))queueImage(id,importedImages[id]||null);
 });
 // onDisconnect is registered again on every connection, including restored pages.
 window.addEventListener('pagehide',()=>{if(database)sdk.goOffline(database);});
@@ -719,7 +817,7 @@ showConnectState();
       <div class="dialog-actions"><button class="dialog-action secondary" type="button" data-owner-cancel>CANCEL</button><button class="dialog-action" type="submit">UNLOCK RESET</button></div>
     </form>
     <div id="owner-confirm" hidden>
-      <p class="dialog-sub">Reset the shared document and all drawings for everyone? A JSON backup downloads first.</p>
+      <p class="dialog-sub">Reset only this sheet, including its drawings and images, for everyone? A JSON backup downloads first. Other sheets stay unchanged.</p>
       <div class="dialog-actions"><button class="dialog-action secondary" type="button" data-owner-cancel>CANCEL</button><button class="dialog-action" id="btn-confirm-reset" type="button">RESET FOR EVERYONE</button></div>
     </div>
   </div>
